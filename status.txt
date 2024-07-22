@@ -1,0 +1,148 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	deleted:    .gitignore
+	deleted:    Container-Monitoring/Container-Monitoring-Compose.yaml
+	deleted:    Container-Monitoring/config/grafana-datasources.yml
+	deleted:    Container-Monitoring/config/prometheus.yml
+	deleted:    DockerFiles/Suricata/Dockerfile
+	deleted:    DockerFiles/Ubuntu-UofR/Dockerfile
+	deleted:    Servers/config/hello.txt
+	deleted:    Servers/config/server-iptables.sh
+	deleted:    Servers/data/Replay_Tool/client_to_server.py
+	deleted:    Servers/data/Replay_Tool/server11_config.txt
+	deleted:    Servers/data/Replay_Tool/server12_config.txt
+	deleted:    Servers/data/Replay_Tool/server21_config.txt
+	deleted:    Servers/data/Replay_Tool/server22_config.txt
+	deleted:    Servers/data/Replay_Tool/server_to_client.py
+	deleted:    Servers/data/Replay_Tool/ue11_config.txt
+	deleted:    Servers/data/Replay_Tool/ue12_config.txt
+	deleted:    Servers/data/Replay_Tool/ue21_config.txt
+	deleted:    Servers/data/Replay_Tool/ue22_config.txt
+	deleted:    Servers/docker-compose-server.yaml
+	deleted:    Suricata/data/suricata_1/create_dummy_interface.sh
+	deleted:    Suricata/data/suricata_1/detect-ddos.rules
+	deleted:    Suricata/data/suricata_1/gtp_header_decode.py
+	deleted:    Suricata/data/suricata_1/mapping.py
+	deleted:    Suricata/data/suricata_1/mapping_data.txt
+	deleted:    Suricata/data/suricata_1/suricata-alerting.py
+	deleted:    Suricata/data/suricata_1/suricata.yaml
+	deleted:    Suricata/data/suricata_1/vxlan_setup_with_upf.sh
+	deleted:    Suricata/docker-compose-suricata.yaml
+	deleted:    cn_list
+	deleted:    docker-suricata
+	deleted:    free5gc-compose-UofR/LICENSE.txt
+	deleted:    free5gc-compose-UofR/Makefile
+	deleted:    free5gc-compose-UofR/README.md
+	deleted:    free5gc-compose-UofR/base/Dockerfile
+	deleted:    free5gc-compose-UofR/base/Dockerfile.nf
+	deleted:    free5gc-compose-UofR/base/Dockerfile.nf.webconsole
+	deleted:    free5gc-compose-UofR/comose_file/docker-compose-build.yaml
+	deleted:    free5gc-compose-UofR/comose_file/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/comose_file/docker-compose-ue.yaml.bkp
+	deleted:    free5gc-compose-UofR/comose_file/docker-compose.yaml
+	deleted:    free5gc-compose-UofR/config/amfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/amfcfg.yaml.bkp
+	deleted:    free5gc-compose-UofR/config/ausfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/chfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/n3iwf-ipsec.sh
+	deleted:    free5gc-compose-UofR/config/n3iwfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/n3uecfg.yaml
+	deleted:    free5gc-compose-UofR/config/nrfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/nssfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/pcfcfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/gnb11cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/gnbcfg.yaml.bkp
+	deleted:    free5gc-compose-UofR/config/slice1/smf1cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/ue11cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/ue12cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/ue13cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/ue14cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/uecfg.yaml.bkp
+	deleted:    free5gc-compose-UofR/config/slice1/uerouting.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/upf1cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice1/upfcfg.bkp
+	deleted:    free5gc-compose-UofR/config/slice2/gnb21cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/smf2cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/ue21cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/ue22cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/ue23cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/ue24cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/uerouting2.yaml
+	deleted:    free5gc-compose-UofR/config/slice2/upf2cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/gnb31cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/smf3cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/ue31cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/ue32cfg.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/uerouting3.yaml
+	deleted:    free5gc-compose-UofR/config/slice3/upf3cfg.yaml
+	deleted:    free5gc-compose-UofR/config/udmcfg.yaml
+	deleted:    free5gc-compose-UofR/config/udrcfg.yaml
+	deleted:    free5gc-compose-UofR/config/upf-iptables.sh
+	deleted:    free5gc-compose-UofR/config/webuicfg.yaml
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/client_to_server.py
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/server11_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/server12_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/server21_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/server22_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/server_to_client.py
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue11_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue12_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue13_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue14_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue21_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue22_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue23_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/Replay_Tool/ue24_config.txt
+	deleted:    free5gc-compose-UofR/data/ue/default_route_update.sh
+	deleted:    free5gc-compose-UofR/data/ue/traffic_gen/YouTube.txt
+	deleted:    free5gc-compose-UofR/data/ue/traffic_gen/generate_traffic.sh
+	deleted:    free5gc-compose-UofR/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/docker-compose-ran.yaml
+	deleted:    free5gc-compose-UofR/docker-compose-ue.yaml
+	deleted:    free5gc-compose-UofR/n3iwue/Dockerfile
+	deleted:    free5gc-compose-UofR/n3iwue/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/n3iwue/docker-compose-ran.yaml
+	deleted:    free5gc-compose-UofR/n3iwue/docker-compose-ue.yaml
+	deleted:    free5gc-compose-UofR/n3iwue/tb.sh
+	deleted:    free5gc-compose-UofR/nf_amf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_amf/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/nf_ausf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_ausf/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/nf_chf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_n3iwf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_nrf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_nssf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_pcf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_smf/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_udm/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_udr/Dockerfile
+	deleted:    free5gc-compose-UofR/nf_udr/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/nf_upf/Dockerfile
+	deleted:    free5gc-compose-UofR/script/release.sh
+	deleted:    free5gc-compose-UofR/tb.sh
+	deleted:    free5gc-compose-UofR/ueransim/Dockerfile
+	deleted:    free5gc-compose-UofR/ueransim/docker-compose-core.yaml
+	deleted:    free5gc-compose-UofR/webui/Dockerfile
+	deleted:    readme.md
+	deleted:    service_port_forwarding.sh
+	deleted:    tb.sh
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+	Container-Monitoring/
+	DockerFiles/
+	Documentations/
+	ML_IDS/
+	Servers/
+	Suricata/
+	cn_list
+	free5gc-compose-UofR/
+	readme.md
+	service_port_forwarding.sh
+	status.txt
+	tb.sh
+

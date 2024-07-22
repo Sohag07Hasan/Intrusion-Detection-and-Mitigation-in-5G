@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+
+  grafana:
+    image: grafana/grafana:10.0.3
+    ports:
+      - 3005:3000
+    volumes:
+      - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana-data:/var/lib/grafana
+  
+  prometheus:
+    image: prom/prometheus:v2.46.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=30GB'
+      - '--storage.tsdb.min-block-duration=1h'
+      - '--storage.tsdb.max-block-duration=12h'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    expose:
+      - 8080
+
+  nodeexporter:
+    image: prom/node-exporter:v1.6.1
+    expose:
+      - 9100:9100
+
+volumes:
+  grafana-data:
+  prom-data:

@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:  
+  mlids_11: #This ML IDS will work with mirror traffic
+    container_name: mlids_11
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.111
+        aliases:
+          - mlids_11
+      privnet:
+        aliases:
+          - mldis_11
+
+  mlids_12: #This ML IDS will work with mirror traffic
+    container_name: mlids_12
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.112
+        aliases:
+          - mlids_12
+      privnet:
+        aliases:
+          - mldis_12
+
+### Inline Configuraiton
+## from UPF upf will handle which direction traffic will go
+  mlids_21: #This ml ids container will sit in line with upf2
+    container_name: mlids_21
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.222
+        aliases:
+          - mlids_21
+      privnet:
+        aliases:
+          - mlids_21
+      after_mlids:
+        ipv4_address: 10.50.50.20
+        aliases:
+          - mlids_21
+
+  mlids_22: #This ml ids container will sit in line with upf2
+    container_name: mlids_22 #Inline
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.223 #connect with upf
+        aliases:
+          - mlids_22
+      privnet:
+        aliases:
+          - mlids_22
+      after_mlids:
+        ipv4_address: 10.50.50.30 # connect with server after mlids
+        aliases:
+          - mlids_22
+
+networks:   
+  publicnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_securenet
+
+  privnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_privnet
+
+  after_mlids:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_after_mlids
+

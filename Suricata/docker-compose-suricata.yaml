@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:  
+  suricata_1: #This Suricata will mirror traffic from UPF
+    container_name: suricata_1
+    image: uofr/suricata:8
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.100
+        aliases:
+          - suricata_1
+      privnet:
+        aliases:
+          - suricata_1
+
+  suricata_2: #This Suricata will sit in line with upf2
+    container_name: suricata_2
+    image: uofr/suricata:8
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.200
+        aliases:
+          - suricata_2
+      privnet:
+        aliases:
+          - suricata_2
+
+networks:
+  publicnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_securenet
+  privnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_privnet
+

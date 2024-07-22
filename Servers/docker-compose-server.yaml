@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  #Server
+  server_11:
+    container_name: server_11
+    #image: tleemcjr/metasploitable2
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.11
+        aliases:
+          - server11
+  #Server
+  server_12:
+    container_name: server_12
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.12
+        aliases:
+          - server12
+
+  #Server for slice 2
+  server_21:
+    container_name: server_21
+    #image: tleemcjr/metasploitable2
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.21
+        aliases:
+          - server21
+  #Server
+  server_22:
+    container_name: server_22
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.22
+        aliases:
+          - server22
+
+  # Server to be connected to mlids
+  server_mlids_21:
+    container_name: server_mlids_21
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./data:/data
+    networks:
+      after_mlids:
+        ipv4_address: 10.50.50.21
+        aliases:
+          - server_mlids_21
+
+
+networks:
+  publicnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_publicnet
+
+  after_mlids:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_after_mlids

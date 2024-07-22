@@ -1,0 +1,1 @@
+alert tcp $HOME_NET any -> any 80 (msg: "Possible DDoS attack"; flags: S; flow: stateless; threshold: type both, track by_dst, count 20, seconds 1; sid:1000001; rev:1;)

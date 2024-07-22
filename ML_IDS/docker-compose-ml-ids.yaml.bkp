@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:  
+  mlids_1: #This Suricata will mirror traffic from UPF
+    container_name: mlids_1
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.111
+        aliases:
+          - mlids_1
+      privnet:
+        aliases:
+          - mldis_1
+
+  mlids_2: #This ml ids container will sit in line with upf2
+    container_name: mlids_2
+    image: ubuntu-uofr
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.10.10.222
+        aliases:
+          - mlids_2
+      privnet:
+        aliases:
+          - mlids_2
+      after_mlids:
+        ipv4_address: 10.50.50.20
+        aliases:
+          - mlids_2
+
+networks:   
+  publicnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_securenet
+
+  privnet:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_privnet
+
+  after_mlids:  # Name of the new network
+    external: true
+    name: free5gc-compose-uofr_after_mlids
+
