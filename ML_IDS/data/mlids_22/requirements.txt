@@ -1,0 +1,7 @@
+pandas
+numpy
+scapy
+scikit-learn==1.3.2
+tqdm
+torch
+requests

@@ -28,7 +28,13 @@
 /free5gc-compose-UofR/data/ue/traffic_gen/*.deb
 
 #ML IDS Container Ignoring csv and pcap files
-/ML_IDS/data/*.csv
-/ML_IDS/data*.pcap
+#/ML_IDS/data/*.csv
+#/ML_IDS/data*.pcap
+
+#Ignor based on file type:
+**/*.csv
+**/*.csv
+**/*.pkl
+
 
 
