@@ -25,7 +25,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./config:/config
+      - ./config/server-iptables.sh:/config/server-iptables.sh
       - ./data:/data
     networks:
       publicnet:
@@ -42,7 +42,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./config:/config
+      - ./config/server-iptables.sh:/config/server-iptables.sh
       - ./data:/data
     networks:
       publicnet:
@@ -57,7 +57,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./config:/config
+      - ./config/server-iptables.sh:/config/server-iptables.sh
       - ./data:/data
     networks:
       publicnet:
@@ -73,7 +73,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./config:/config
+      - ./config/server-iptables.sh:/config/server-iptables.sh
       - ./data:/data
     networks:
       after_mlids:

@@ -35,11 +35,6 @@ services:
         aliases:
           - suricata_2
 
-      after_mlids:
-        ipv4_address: 10.50.50.130 # connect with server after suricata UPF > Suricata (>) Mlids Server
-        aliases:
-          - suricata_2
-
 networks:
   publicnet:  # Name of the new network
     external: true
@@ -47,7 +42,4 @@ networks:
   privnet:  # Name of the new network
     external: true
     name: free5gc-compose-uofr_privnet
-  after_mlids:  # Network that connects servers with Suricata and MLIDS
-    external: true
-    name: free5gc-compose-uofr_after_mlids
 

@@ -1,6 +1,9 @@
+# core_network_api.py
+
 import subprocess
 import json
 import requests
+#from tailer import follow
 
 class CoreNetworkAPI:
     @staticmethod
@@ -18,6 +21,12 @@ class CoreNetworkAPI:
                     CoreNetworkAPI._send_curl_request(url, "POST")
                     break
         CoreNetworkAPI._update_mapping_file(cntxt, mapping_data)
+
+    # # Sends API request using CURL
+    # @staticmethod
+    # def _send_curl_request(url, method):
+    #     result = subprocess.run(['curl', '-X', method, url], capture_output=True, text=True)
+
 
     @staticmethod
     def change_throughput(ip, mapping_data="mapping_data.txt", slice=2):
@@ -73,6 +82,7 @@ class CoreNetworkAPI:
             else:
                 print(f"Failed to send POST request. Status code: {post_response.status_code}")
 
+    
     @staticmethod
     def _update_mapping_file(cntxt, mapping_data="mapping_data.txt"):
         with open(mapping_data, "r") as f:
@@ -88,6 +98,8 @@ class CoreNetworkAPI:
         with open(mapping_data, "w") as f:
             f.write(new_lines)
 
+
+
     @staticmethod
     def _send_curl_request(url, method):
         try:
@@ -100,12 +112,15 @@ class CoreNetworkAPI:
             print(f"An error occurred while sending the curl request: {e}")
             return None
 
-    # Creates Mapping file that holds UE IP vs SM Context Info
-    # @slice value "" means slice 1. As there is no number we put an empty string
+
+    # Creates UE IP mapping with SM Context data
+    # @mapping_data: is a text file that holds the data
+    # API call to AMF. So, no need to specifiy slice identierer
     @staticmethod
-    def create_mapping_data(mapping_data="mapping_data.txt", slices=["", 2]):
+    def create_mapping_data(mapping_data="mapping_data.txt"):
         url = "http://amf.free5gc.org:8000/namf-oam/v1/registered-ue-context" 
         try:
+            # Fetch and process initial JSON response
             json_response = CoreNetworkAPI._send_curl_request(url, "GET")
             if json_response is None:
                 return
@@ -119,18 +134,16 @@ class CoreNetworkAPI:
                 sm_contexts = [k["SmContextRef"] for k in item["PduSessions"]]
 
                 for smcntxt in sm_contexts:
-                    for slice in slices:
-                        sm_url = f"http://smf{slice}.free5gc.org:8000/nsmf-oam/v1/ue-pdu-session-info/{smcntxt}"
-                        json_response = CoreNetworkAPI._send_curl_request(sm_url, "GET")
-                        if json_response == "null" or json_response is None:
-                            continue
-                        else:
-                            json_response = json.loads(json_response)
-                            ip = json_response["PDUAddress"]
-                        
-                        with open(mapping_data, 'a') as file:
-                            line = f"SmContext: {smcntxt}\tip: {ip}\tSupi: {supi}\n"
-                            file.write(line)
+                    sm_url = f"http://smf2.free5gc.org:8000/nsmf-oam/v1/ue-pdu-session-info/{smcntxt}"
+                    json_response = CoreNetworkAPI._send_curl_request(sm_url, "GET")
+                    if json_response == "null" or json_response is None:
+                        continue
+                    else:
+                        json_response = json.loads(json_response)
+                        ip = json_response["PDUAddress"]
+                    
+                    with open(mapping_data, 'a') as file:
+                        line = f"SmContext: {smcntxt}\tip: {ip}\tSupi: {supi}\n"
+                        file.write(line)
         except Exception as e:
-            print(f"An error occurred in create_mapping_data: {e}")
-
+            print(f"An error occurred in process_and_write_data: {e}")
