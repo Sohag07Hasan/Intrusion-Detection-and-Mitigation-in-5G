@@ -6,5 +6,8 @@
 # Forward Traffic: upf2 -> "mlids_21/mlids_22/Suricata_2" -> server-mlids_21
 # Return/Back Traffic: server-mlids_21 > "mlids_21/mlids_22/Suricata_2" > upf2
 
+#First We need to delete ip route
+ip route del 10.61.0.0/24
+
 #mlids2 IP: 10.50.50.30
 ip route add 10.61.0.0/24 via 10.50.50.30

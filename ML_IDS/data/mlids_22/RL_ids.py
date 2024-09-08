@@ -28,11 +28,11 @@ import torch.nn.functional as F
 from collections import deque
 
 ##importing API functions
-from utils import release_pdu, change_throughput, update_file
+from utils import CoreNetworkAPI
 
 ###ML Variables
-scaller_save_path = "./ml_models/scalers_5gnidd/scalers/scaler_k_3_n_1_f_11.pkl"
-model_save_path = "./ml_models/models_5gnidd/models/RF_model_k_3_n_1_f_11.pkl"
+scaller_save_path = "./ml_models/DockerTB/scalers/scaler_k_3_n_1_f_11.pkl"
+model_save_path = "./ml_models/DockerTB/models/RF_model_k_3_n_1_f_11.pkl"
 path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
 #path_of_pth_file = "./rl_modesl/RL_InSDN/model_50000_3.pth" #INSDN
 
@@ -266,7 +266,16 @@ def save_features():
         df.to_csv(DATASET_PATH, index=False)
     FEATURES = []
 
+def initialize_ids():
+    try:
+        CoreNetworkAPI.create_mapping_data(mapping_data="mapping_data.txt", slices=["", 2])
+        print("mapping data created: IP and SESSION")
+    except:
+        print("Mapping Data Creation Failed")
+
 
 if __name__ == "__main__":
+    print('initializeing IDS')
+    initialize_ids()
     print(f"Starting packet capture on interface {INTERFACE}")
     sniff(iface=INTERFACE, prn=packet_callback, store=False)

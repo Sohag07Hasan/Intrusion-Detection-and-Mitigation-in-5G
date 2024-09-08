@@ -1,0 +1,42 @@
+#this is just another repo forked in my account already
+/gtp5g
+
+#Holds codes and pcap files
+/DataSets_Codes
+
+#holds traces collected from upf
+/Experiments
+
+#ingoring big files pcap files from servers
+/Servers/data/server11/*
+/Servers/data/server12/*
+/Servers/data/server21/*
+/Servers/data/server22/*
+
+# ignoring from free5gc core
+/free5gc-compose-UofR/data/upf/*.pcap #ignoring pcap files
+/free5gc-compose-UofR/data/ue/ue11/*
+/free5gc-compose-UofR/data/ue/ue12/*
+/free5gc-compose-UofR/data/ue/ue13/*
+/free5gc-compose-UofR/data/ue/ue14/*
+/free5gc-compose-UofR/data/ue/ue21/*
+/free5gc-compose-UofR/data/ue/ue22/*
+/free5gc-compose-UofR/data/ue/ue23/*
+/free5gc-compose-UofR/data/ue/ue24/*
+
+#Google Chrome binary
+/free5gc-compose-UofR/data/ue/traffic_gen/*.deb
+
+#ML IDS Container Ignoring csv and pcap files
+#/ML_IDS/data/*.csv
+#/ML_IDS/data*.pcap
+
+#Ignor based on file type:
+**/*.csv
+**/*.csv
+**/*.pkl
+**/*.pth
+**/*.pcap
+**/*.deb
+
+
