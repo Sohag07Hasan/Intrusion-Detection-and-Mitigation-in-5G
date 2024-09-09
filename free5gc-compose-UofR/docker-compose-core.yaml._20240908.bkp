@@ -361,6 +361,22 @@ services:
   #   depends_on:
   #     - free5gc-n3iwf
 
+  #Dummy [without assinging network, no network is being created. So, I am creating a dummy]
+  dummy_1:
+    container_name: dummy_1
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    # volumes:
+    #   - ./config/server-iptables.sh:/config/server-iptables.sh
+    #   - ./data:/data
+    networks:
+      after_mlids:
+        ipv4_address: 10.50.50.250
+        aliases:
+          - dummy_1
+
 networks:
   privnet:  # 5G functions are connected with this
     ipam:
@@ -385,6 +401,14 @@ networks:
         - subnet: 10.10.10.0/24  # Different subnet for the new network
     driver_opts:
       com.docker.network.bridge.name: br-secure  # Optional: Specify a different bridge name for the new network
+
+  after_mlids:  # Suricata and MLIDS are conencted with this (upf -> mlids -> after_mlids -> Internet)
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.50.50.0/24  # Different subnet for the new network
+    driver_opts:
+      com.docker.network.bridge.name: br-mlids  # Optional: Specify a different bridge name for the new network
 
 volumes:
   dbdata:

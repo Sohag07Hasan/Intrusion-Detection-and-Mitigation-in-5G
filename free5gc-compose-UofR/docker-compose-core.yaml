@@ -47,45 +47,29 @@ services:
         ipv4_address: 10.10.10.20
         aliases:
           - upf2
-        
 
-  # free5gc-upf3:
-  #   container_name: upf3
-  #   image: free5gc/upf:v3.4.1
-  #   command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
-  #   volumes:
-  #     - ./config/slice3/upf3cfg.yaml:/free5gc/config/upfcfg.yaml
-  #     - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-  #     - ./data/upf:/free5gc/data
-  #   cap_add:
-  #     - NET_ADMIN
-  #   networks:
-  #     privnet:
-  #       aliases:
-  #         - upf3.free5gc.org
-
-  #Server
-  # server_11:
-  #   container_name: server_11
-  #   image: ubuntu:20.04
-  #   volumes:
-  #     - ./config/slice1/server_11.yaml:/slice1/config/server_11.yaml
-  #     - ./config/slice2/server_21.yaml:/slice2/config/server_21.yaml
-  #   networks:
-  #     publicnet:
-  #       aliases:
-  #         - server11
-
-  # server_21:
-  #   container_name: server_21
-  #   image: ubuntu:20.04
-  #   volumes:
-  #     - ./config/slice1/server_11.yaml:/slice1/config/server_11.yaml
-  #     - ./config/slice2/server_21.yaml:/slice2/config/server_21.yaml
-  #   networks:
-  #     publicnet:
-  #       aliases:
-  #         - server21
+  free5gc-upf3:
+    container_name: upf3
+    image: free5gc/upf:v3.4.1
+    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    volumes:
+      - ./config/slice3/upf3cfg.yaml:/free5gc/config/upfcfg.yaml
+      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
+      - ./data/upf:/data
+    cap_add:
+      - NET_ADMIN
+    networks:
+      privnet:
+        aliases:
+          - upf3.free5gc.org
+      publicnet:
+        ipv4_address: 10.200.200.30 #Needs to check if it creates any ip conflict
+        aliases:
+          - upf3
+      securenet:  #public network to be connected to outside network
+        ipv4_address: 10.10.10.30 ##Needs to check if it creates any ip conflict
+        aliases:
+          - upf3
 
   db:
     container_name: mongodb
@@ -224,24 +208,25 @@ services:
       - free5gc-nrf
       - free5gc-upf2
       
-  # free5gc-smf3:
-  #   container_name: smf3
-  #   image: free5gc/smf:v3.4.1
-  #   command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
-  #   expose:
-  #     - "8000"
-  #   volumes:
-  #     - ./config/slice3/smf3cfg.yaml:/free5gc/config/smfcfg.yaml
-  #     - ./config/slice3/uerouting3.yaml:/free5gc/config/uerouting.yaml
-  #   environment:
-  #     GIN_MODE: release
-  #   networks:
-  #     privnet:
-  #       aliases:
-  #         - smf3.free5gc.org
-  #   depends_on:
-  #     - free5gc-nrf
-  #     - free5gc-upf3
+  free5gc-smf3:
+    container_name: smf3
+    image: free5gc/smf:v3.4.1
+    command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
+    expose:
+      - "8000"
+    volumes:
+      - ./config/slice3/smf3cfg.yaml:/free5gc/config/smfcfg.yaml
+      - ./config/slice3/uerouting3.yaml:/free5gc/config/uerouting.yaml
+    environment:
+      GIN_MODE: release
+    networks:
+      privnet:
+        aliases:
+          - smf3.free5gc.org
+    depends_on:
+      - free5gc-nrf
+      - free5gc-upf3
+
 
   free5gc-udm:
     container_name: udm

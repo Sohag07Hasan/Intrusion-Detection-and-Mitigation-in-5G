@@ -48,7 +48,7 @@ configuration:
               sst: 1 # Slice/Service Type (uinteger, range: 0~255)
               sd: 223344 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
             dnnUpfInfoList: # DNN information list for this S-NSSAI
-              - dnn: internet2
+              - dnn: internet3
                 pools:
                   - cidr: 10.62.0.0/16
                 staticPools:

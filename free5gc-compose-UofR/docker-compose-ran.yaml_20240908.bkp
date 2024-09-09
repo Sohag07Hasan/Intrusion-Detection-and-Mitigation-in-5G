@@ -36,21 +36,21 @@ services:
           - gnb2.free5gc.org
 
   
-  ueransim-gnb31:
-    container_name: ueransim-gnb31
-    image: free5gc/ueransim:latest
-    command: ./nr-gnb -c ./config/gnbcfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - gnb3.free5gc.org
+  # ueransim-gnb31:
+  #   container_name: ueransim-gnb31
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-gnb -c ./config/gnbcfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - gnb3.free5gc.org
 
 networks:
   privnet:

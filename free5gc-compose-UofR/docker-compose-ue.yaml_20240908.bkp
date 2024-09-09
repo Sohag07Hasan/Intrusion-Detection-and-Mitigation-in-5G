@@ -143,22 +143,22 @@ services:
         aliases:
           - ue24.free5gc.org  
 
-  #slice3 start here
-  ueransim-ue31:
-    container_name: ue31
-    image: free5gc/ueransim:latest
-    command: ./nr-ue -c ./config/uecfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - ue31.free5gc.org
+  # #slice3 start here
+  # ueransim-ue31:
+  #   container_name: ue31
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-ue -c ./config/uecfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - ue31.free5gc.org
   
   # ueransim-ue32:
   #   container_name: ue32
