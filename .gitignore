@@ -7,6 +7,9 @@
 #holds traces collected from upf
 /Experiments
 
+#DVWA server ignring
+/Servers/DVWA/*
+
 #ingoring big files pcap files from servers
 #/Servers/data/server11/*
 #/Servers/data/server12/*
