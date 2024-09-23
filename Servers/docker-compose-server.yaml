@@ -10,7 +10,7 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./config/server-iptables.sh:/config/server-iptables.sh
+      - ./config:/config
       - ./data:/data
     networks:
       publicnet:
@@ -64,6 +64,36 @@ services:
         ipv4_address: 10.200.200.22
         aliases:
           - server22
+  #Server (for slice3)
+  server_31:
+    container_name: server_31
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.31
+        aliases:
+          - server31
+
+  server_32:
+    container_name: server_32
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.32
+        aliases:
+          - server32
 
   # Server to be connected to mlids
   server_mlids_21:
@@ -81,6 +111,45 @@ services:
         aliases:
           - server_mlids_21
 
+
+  # vulnerable webserver 
+  dvwa:
+    build: .
+    image: ghcr.io/digininja/dvwa:latest
+    # Change `always` to `build` to build from local source
+    pull_policy: always
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./DVWA/dvwa:/DVWA/dvwa
+    environment:
+      - DB_SERVER=db
+    depends_on:
+      - db
+    networks:
+      publicnet:
+       ipv4_address: 10.200.200.13
+       aliases:
+        - dvwa
+    ports:
+      - 127.0.0.1:4280:443
+    restart: unless-stopped
+  # Data Base for the vulnerable webserver
+  db:
+    image: docker.io/library/mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=dvwa
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USER=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    volumes:
+      - ./DVWA/dvwa:/var/lib/mysql
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.14
+        aliases:
+          - dvwadb
+    restart: unless-stopped 
 
 networks:
   publicnet:  # Name of the new network

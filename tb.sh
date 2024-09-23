@@ -18,27 +18,27 @@ input_command="$1"
 case $input_command in
   "core up")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-core.yaml up
+    docker compose -f ./free5gc-compose-UofR/docker-compose-core.yaml up -d > /dev/null 2>&1
     ;;
   "core down")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml down..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-core.yaml down
+    #docker compose -f ./free5gc-compose-UofR/docker-compose-core.yaml down
     ;;
   "ran up")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-ran.yaml up
+    docker compose -f ./free5gc-compose-UofR/docker-compose-ran.yaml up -d > /dev/null 2>&1
     ;;
   "ran down")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml down..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-ran.yaml down
+    #docker compose -f ./free5gc-compose-UofR/docker-compose-ran.yaml down
     ;;
   "ue up")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-ue.yaml up
+    0 > /dev/null 2>&1
     ;;
   "ue down")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml down..."
-    docker compose -f ./free5gc-compose-UofR/docker-compose-ue.yaml down
+    #docker compose -f ./free5gc-compose-UofR/docker-compose-ue.yaml down
     ;;
   "core start")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
@@ -83,11 +83,11 @@ case $input_command in
 
   "server up")
     echo "Executing ./Servers/docker-compose-server.yaml up.."
-    docker compose -f ./Servers/docker-compose-server.yaml up
+    docker compose -f ./Servers/docker-compose-server.yaml up -d > /dev/null 2>&1
     ;;
   "server down")
     echo "Executing ./Servers/docker-compose-server.yaml down..."
-    docker compose -f ./Servers/docker-compose-server.yaml down
+    #docker compose -f ./Servers/docker-compose-server.yaml down
     ;;
   "server start")
     echo "Executing ./Servers/docker-compose-server.yaml start..."
@@ -103,11 +103,11 @@ case $input_command in
     ;;
   "mon up")
     echo "Executing ./Container-Monitoring/Container-Monitoring-Compose.yaml up.."
-    docker compose -f ./Container-Monitoring/Container-Monitoring-Compose.yaml up
+    docker compose -f ./Container-Monitoring/Container-Monitoring-Compose.yaml up -d > /dev/null 2>&1
     ;;
   "mon down")
     echo "Executing ./Container-Monitoring/Container-Monitoring-Compose.yaml down.."
-    docker compose -f ./Container-Monitoring/Container-Monitoring-Compose.yaml down
+    #docker compose -f ./Container-Monitoring/Container-Monitoring-Compose.yaml down
     ;;
   "mon start")
     echo "Executing ./Container-Monitoring/Container-Monitoring-Compose.yaml start.."
@@ -123,15 +123,19 @@ case $input_command in
     ;;
   "suricata up")
     echo "Executing ./Suricata/docker-compose-suricata.yaml up"
-    docker compose -f ./Suricata/docker-compose-suricata.yaml up
+    docker compose -f ./Suricata/docker-compose-suricata.yaml up -d > /dev/null 2>&1
     ;;
   "suricata down")
     echo "Executing ./Suricata/docker-compose-suricata.yaml down"
-    docker compose -f ./Suricata/docker-compose-suricata.yaml down
+    #docker compose -f ./Suricata/docker-compose-suricata.yaml down
     ;;
   "suricata start")
     echo "Executing ./Suricata/docker-compose-suricata.yaml start"
     docker compose -f ./Suricata/docker-compose-suricata.yaml start
+    ;;
+  "suricata stop")
+    echo "Executing ./Suricata/docker-compose-suricata.yaml start"
+    docker compose -f ./Suricata/docker-compose-suricata.yaml stop
     ;;
   "suricata logs")
     echo "Executing ./Suricata/docker-compose-suricata.yaml logs"
@@ -139,11 +143,11 @@ case $input_command in
     ;;
   "mlids up")
     echo "Executing ./ML_IDS/docker-compose-ml-ids.yaml up"
-    docker compose -f ./ML_IDS/docker-compose-ml-ids.yaml up
+    docker compose -f ./ML_IDS/docker-compose-ml-ids.yaml up -d > /dev/null 2>&1
     ;;
   "mlids down")
     echo "Executing ./ML_IDS/docker-compose-ml-ids.yaml down"
-    docker compose -f ./ML_IDS/docker-compose-ml-ids.yaml down
+    #docker compose -f ./ML_IDS/docker-compose-ml-ids.yaml down
     ;;
   "mlids start")
     echo "Executing ./ML_IDS/docker-compose-ml-ids.yaml start"
@@ -154,7 +158,7 @@ case $input_command in
     docker compose -f ./ML_IDS/docker-compose-ml-ids.yaml stop
     ;;
   "slice test")
-    for slice_num in 1 2; do
+    for slice_num in 1 2 3; do
       #Create a new Tmux window (tab) for each slice
       tmux new-window -n "Slice${slice_num}"
 
