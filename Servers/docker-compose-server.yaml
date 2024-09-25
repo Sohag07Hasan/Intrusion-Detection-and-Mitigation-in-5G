@@ -122,6 +122,8 @@ services:
       - NET_ADMIN
     volumes:
       - ./DVWA/dvwa:/DVWA/dvwa
+      - ./config:/config
+      - ./data:/data
     environment:
       - DB_SERVER=db
     depends_on:
@@ -131,6 +133,10 @@ services:
        ipv4_address: 10.200.200.13
        aliases:
         - dvwa
+      after_mlids:
+        ipv4_address: 10.50.50.50
+        aliases:
+          - dvwa
     ports:
       - 127.0.0.1:4280:443
     restart: unless-stopped

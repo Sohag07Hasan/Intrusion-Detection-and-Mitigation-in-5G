@@ -8,7 +8,8 @@
 /Experiments
 
 #DVWA server ignring
-/Servers/DVWA/*
+/Servers/DVWA/
+/Servers/dvwa_keys/
 
 #ingoring big files pcap files from servers
 #/Servers/data/server11/*
@@ -41,5 +42,5 @@
 **/*.pth
 **/*.pcap
 **/*.deb
-
+**/*.pyc
 

@@ -1,6 +1,11 @@
 import subprocess
 import json
 import requests
+import ipaddress
+import pandas as pd
+from datetime import datetime
+from config import get_enforcment_strategy, MS_IP_POOL
+import os
 
 class CoreNetworkAPI:
     @staticmethod
@@ -20,7 +25,7 @@ class CoreNetworkAPI:
         CoreNetworkAPI._update_mapping_file(cntxt, mapping_data)
 
     @staticmethod
-    def change_throughput(ip, mapping_data="mapping_data.txt", slice=2):
+    def change_throughput(ip, mapping_data="mapping_data.txt", slice=2, max_dl='5 Mbps', max_ul='1 Mbps', qos="20"):
         cntxt = None
         url = None
         with open(mapping_data, "r") as f:
@@ -51,15 +56,15 @@ class CoreNetworkAPI:
                             ],
                             "pccRuleId": "PccRuleId-1",
                             "precedence": 100,
-                            "refQosData": ["10"]
+                            "refQosData": [f"{qos}"]
                         }
                     },
                     "qosDecs": {
-                        "10": {
-                            "qosId": "10",
+                        f"{qos}": {
+                            "qosId": f"{qos}",
                             "5qi": 3,
-                            "maxbrUl": "12 Mbps",
-                            "maxbrDl": "12 Mbps",
+                            "maxbrUl": max_ul,
+                            "maxbrDl": max_dl,
                             "gbrUl": "0 Mbps",
                             "gbrDl": "0 Mbps"
                         }
@@ -103,7 +108,7 @@ class CoreNetworkAPI:
     # Creates Mapping file that holds UE IP vs SM Context Info
     # @slice value "" means slice 1. As there is no number we put an empty string
     @staticmethod
-    def create_mapping_data(mapping_data="mapping_data.txt", slices=["", 2]):
+    def create_mapping_data(mapping_data="mapping_data.txt", slices=["", 2, 3]):
         url = "http://amf.free5gc.org:8000/namf-oam/v1/registered-ue-context" 
         try:
             json_response = CoreNetworkAPI._send_curl_request(url, "GET")
@@ -133,4 +138,119 @@ class CoreNetworkAPI:
                             file.write(line)
         except Exception as e:
             print(f"An error occurred in create_mapping_data: {e}")
+
+
+##throttle the throughput
+def change_throughput(ip):
+    CoreNetworkAPI.change_throughput(ip)
+
+## Create the mapping data
+def create_mapping_data(mapping_data="mapping_data.txt"):
+    CoreNetworkAPI.create_mapping_data(mapping_data=mapping_data, slices=[2])
+
+##Extract UE and Server IP:
+def extract_ip_addresses_from_flow(flow):
+    ue_blocks = ['10.60.0.0/24', '10.61.0.0/24', '10.62.0.0/24']
+
+    # Extract the first two IP addresses
+    ip1, ip2 = flow.split('_')[:2]
+
+    # List of IP address blocks
+    ue_blocks = MS_IP_POOL
+
+    # Convert CIDR blocks to IPv4Network objects
+    ue_networks = [ipaddress.ip_network(block) for block in ue_blocks]
+
+    # Initialize matched and non-matched IPs
+    matched_ip = None
+    nonmatched_ip = None
+
+    # Function to check if IP belongs to a CIDR block
+    def check_ip(ip):
+        for network in ue_networks:
+            if ipaddress.ip_address(ip) in network:
+                return True
+        return False
+
+    # Check the IP addresses
+    for ip in [ip1, ip2]:
+        if check_ip(ip):
+            matched_ip = ip
+        else:
+            nonmatched_ip = ip
+
+    # Output results
+    print(f"Source IP:", matched_ip)
+    print("Destination IP:", nonmatched_ip)
+    return matched_ip, nonmatched_ip
+
+# Monitor and process attack records
+def monitor_attacks(flow_id):
+    source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
+    strategy = get_enforcment_strategy('type_1')
+    # Load CSV file
+    file_name = 'attack_records.csv'
+    df = initialize_attack_record(file_name=file_name)
+      # Timestamp for current attack
+    attack_timestamp = datetime.now()
+
+    # Check if the source IP already has records in the file
+    attack_count = df[df['source_ip'] == source_ip].shape[0]
+
+    # Default mitigation action (None unless thresholds are hit)
+    mitigation_action = ''
+
+   
+    if attack_count + 1 >= strategy['pdu_session_deletion_limit']:
+        # Delete PDU session
+        mitigation_action = 'PDU Session Deleted'
+        #delete_pdu_session(source_ip)  # Assuming you have a function for this action
+        #CoreNetworkAPI.release_pdu(source_ip)
+
+    elif attack_count + 1 in strategy['throttle_intervals']:
+        # Apply throttle based on the number of attacks
+        index = strategy['throttle_intervals'].index(attack_count + 1)
+        #throttle_network(source_ip, strategy["throttled_by"][index])  # Throttle function
+        max_dl, max_ul, qos = strategy["max_dl"][index], strategy["max_ul"][index], strategy["qos"][index]
+        mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'
+        CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
+    
+    # Create a new record for the current attack
+    new_record = pd.DataFrame([{
+        'source_ip': source_ip,
+        'dest_ip': destination_ip,
+        'flow_id': flow_id,
+        'attack_timestamp': attack_timestamp,
+        'mitigation_action': mitigation_action
+    }])
+    
+    # Append the new attack to the dataframe and save to CSV
+    df = pd.concat([df, new_record], ignore_index=True)
+    df.to_csv(file_name, index=False)
+
+    print(f"Attack Detected: from {source_ip} to {destination_ip}, action taken: {mitigation_action}")
+
+
+# Initialize or load attack_records CSV file
+def initialize_attack_record(file_name):
+    try:
+        df = pd.read_csv(file_name)
+    except FileNotFoundError:
+        # Create CSV with headers if it doesn't exist
+        df = pd.DataFrame(columns=['source_ip', 'dest_ip', 'flow_id', 'attack_timestamp', 'mitigation_action'])
+        df.to_csv(file_name, index=False)
+    return df
+
+
+## Delete Files based on name/location
+def delete_files(file_list=[]):
+    for file_path in file_list:
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
+            except Exception as e:
+                print(f"Error deleting {file_path}: {e}")
+        else:
+            print(f"File does not exist: {file_path}")
 

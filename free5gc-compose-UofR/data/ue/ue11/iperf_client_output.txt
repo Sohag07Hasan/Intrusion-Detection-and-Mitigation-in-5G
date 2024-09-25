@@ -1,0 +1,32 @@
+Connecting to host 10.200.200.22, port 5201
+[  5] local 10.61.0.13 port 54447 connected to 10.200.200.22 port 5201
+[  7] local 10.61.0.13 port 53149 connected to 10.200.200.22 port 5201
+[ ID][Role] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+[  5][TX-C]   0.00-1.00   sec   750 MBytes  6.29 Gbits/sec            583300  
+[  7][RX-C]   0.00-1.00   sec  15.1 MBytes   127 Mbits/sec  0.107 ms  1771/13546 (13%)  
+[  5][TX-C]   1.00-2.00   sec   809 MBytes  6.78 Gbits/sec            629130  
+[  7][RX-C]   1.00-2.00   sec  13.5 MBytes   114 Mbits/sec  0.096 ms  2515/13046 (19%)  
+[  5][TX-C]   2.00-3.00   sec   813 MBytes  6.82 Gbits/sec            632560  
+[  7][RX-C]   2.00-3.00   sec  9.45 MBytes  79.3 Mbits/sec  0.153 ms  3323/10676 (31%)  
+[  5][TX-C]   3.00-4.00   sec   811 MBytes  6.81 Gbits/sec            631170  
+[  7][RX-C]   3.00-4.00   sec  10.0 MBytes  84.2 Mbits/sec  0.082 ms  3523/11334 (31%)  
+[  5][TX-C]   4.00-5.00   sec   812 MBytes  6.81 Gbits/sec            631670  
+[  7][RX-C]   4.00-5.00   sec  11.8 MBytes  98.9 Mbits/sec  0.099 ms  4012/13186 (30%)  
+[  5][TX-C]   5.00-6.00   sec   802 MBytes  6.73 Gbits/sec            623910  
+[  7][RX-C]   5.00-6.00   sec  17.4 MBytes   146 Mbits/sec  0.052 ms  5748/19314 (30%)  
+[  5][TX-C]   6.00-7.00   sec   798 MBytes  6.69 Gbits/sec            620540  
+[  7][RX-C]   6.00-7.00   sec  21.8 MBytes   183 Mbits/sec  0.050 ms  7960/24896 (32%)  
+[  5][TX-C]   7.00-8.00   sec   809 MBytes  6.78 Gbits/sec            628990  
+[  7][RX-C]   7.00-8.00   sec  17.4 MBytes   146 Mbits/sec  0.068 ms  6218/19774 (31%)  
+[  5][TX-C]   8.00-9.00   sec   810 MBytes  6.80 Gbits/sec            630290  
+[  7][RX-C]   8.00-9.00   sec  15.1 MBytes   126 Mbits/sec  0.029 ms  5393/17120 (32%)  
+[  5][TX-C]   9.00-10.00  sec   806 MBytes  6.76 Gbits/sec            627000  
+[  7][RX-C]   9.00-10.00  sec  18.4 MBytes   154 Mbits/sec  0.098 ms  6564/20878 (31%)  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID][Role] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+[  5][TX-C]   0.00-10.00  sec  7.83 GBytes  6.73 Gbits/sec  0.000 ms  0/6238560 (0%)  sender
+[  5][TX-C]   0.00-43.19  sec   769 MBytes   149 Mbits/sec  0.075 ms  5640400/6238556 (90%)  receiver
+[  7][RX-C]   0.00-10.00  sec  7.53 GBytes  6.47 Gbits/sec  0.000 ms  0/5995830 (0%)  sender
+[  7][RX-C]   0.00-43.19  sec   150 MBytes  29.1 Mbits/sec  0.098 ms  47027/163770 (29%)  receiver
+
+iperf Done.

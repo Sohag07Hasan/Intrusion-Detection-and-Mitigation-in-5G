@@ -4,6 +4,9 @@
 ### Infernece
 ### Saving
 
+##importing API functions
+from utils import monitor_attacks, create_mapping_data, delete_files
+
 import os
 import random
 import pandas as pd
@@ -27,15 +30,13 @@ import torch.optim as optim
 import torch.nn.functional as F
 from collections import deque
 
-##importing API functions
-from utils import CoreNetworkAPI
+
 
 ###ML Variables
-scaller_save_path = "./ml_models/DockerTB/scalers/scaler_k_3_n_1_f_11.pkl"
-model_save_path = "./ml_models/DockerTB/models/RF_model_k_3_n_1_f_11.pkl"
-path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
+scaller_save_path = "./scalers/scaler_k_3_n_5_f_55.pkl"
+model_save_path = "./rf_models/RF_model_k_3_n_5_f_55.pkl"
+path_of_pth_file = "./rl_models/model_50000.pth" #5GNIDD
 #path_of_pth_file = "./rl_modesl/RL_InSDN/model_50000_3.pth" #INSDN
-
 
 ##Flow Control Variables
 PCKT_NUMBER = 3
@@ -105,7 +106,7 @@ with open(model_save_path, 'rb') as f:
 class DQN(nn.Module):
     def __init__(self, state_size, action_size):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(state_size*100, 512)
+        self.fc1 = nn.Linear(state_size*101, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, 128)
         self.fc4 = nn.Linear(128, 64) 
@@ -152,7 +153,8 @@ def predict_attack(features, flow_id):
 
     if flow_id in STATE.keys():
 
-        tree_counter = np.zeros(100, dtype=int)
+        tree_counter = np.zeros(101, dtype=int)
+        tree_counter[-1] = PCKT_NUMBER
         for i, tree in enumerate(loaded_model.estimators_):
             tree_counter[i] = tree.predict(transformed_features)[0]  # Extract single element
         STATE[flow_id][STATE_COUNTER[flow_id]] = tree_counter
@@ -170,10 +172,11 @@ def predict_attack(features, flow_id):
             del STATE_COUNTER[flow_id]
 
     else:
-        STATE[flow_id] = -1 * np.ones((state_size, 100), dtype=int)
+        STATE[flow_id] = -1 * np.ones((state_size, 101), dtype=int)
         STATE_COUNTER[flow_id] = 0
 
-        tree_counter = np.zeros(100, dtype=int)
+        tree_counter = np.zeros(101, dtype=int)
+        tree_counter[-1] = PCKT_NUMBER
         for i, tree in enumerate(loaded_model.estimators_):
             tree_counter[i] = tree.predict(transformed_features)[0]  # Extract single element
         STATE[flow_id][STATE_COUNTER[flow_id]] = tree_counter
@@ -218,8 +221,8 @@ def calc_features_and_run_ids(pkt_list, flow_id, protocol):
             print("RL prediction: Wait")
         elif prediction == 1:
             print("RL prediction: Attack")
-            print("Throttle the malicious IP")
-            change_throughput("10.61.0.3")
+            print("Throttle the malicious IP")            
+            monitor_attacks(flow_id)
         elif prediction == 2:
             print("RL prediction: Benign")
         else:
@@ -266,16 +269,20 @@ def save_features():
         df.to_csv(DATASET_PATH, index=False)
     FEATURES = []
 
+##This function will initialize IDS systems
 def initialize_ids():
-    try:
-        CoreNetworkAPI.create_mapping_data(mapping_data="mapping_data.txt", slices=["", 2])
-        print("mapping data created: IP and SESSION")
-    except:
-        print("Mapping Data Creation Failed")
+    print('initializeing IDS')      
+    file_list = [
+        './mapping_data.txt',
+        './attack_records.csv',
+        './overlap_dataset_live.csv'
+    ]
+    delete_files(file_list=file_list)
+    create_mapping_data(mapping_data="mapping_data.txt")
+    
 
 
 if __name__ == "__main__":
-    print('initializeing IDS')
     initialize_ids()
     print(f"Starting packet capture on interface {INTERFACE}")
     sniff(iface=INTERFACE, prn=packet_callback, store=False)
