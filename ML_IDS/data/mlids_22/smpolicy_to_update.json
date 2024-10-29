@@ -1,0 +1,102 @@
+{
+    "context": {
+        "supi": "imsi-208930000000007",
+        "pduSessionId": 1,
+        "pduSessionType": "IPV4",
+        "dnn": "internet2",
+        "notificationUri": "http://smf2.free5gc.org:8000/nsmf-callback/sm-policies/urn:uuid:9ad552b0-016e-4575-826b-4f5fcfd8b14e",
+        "accessType": "3GPP_ACCESS",
+        "servingNetwork": {
+            "mnc": "93",
+            "mcc": "208"
+        },
+        "ipv4Address": "10.61.0.1",
+        "subsSessAmbr": {
+            "uplink": "200 Mbps",
+            "downlink": "100 Mbps"
+        },
+        "subsDefQos": {
+            "5qi": 9,
+            "arp": {
+                "priorityLevel": 8,
+                "preemptCap": "",
+                "preemptVuln": ""
+            },
+            "priorityLevel": 8
+        },
+        "sliceInfo": {
+            "sst": 1,
+            "sd": "112233"
+        },
+        "suppFeat": "F"
+    },
+    "policy": {
+        "sessRules": {
+            "SessRuleId-1": {
+                "authSessAmbr": {
+                    "uplink": "200 Mbps",
+                    "downlink": "100 Mbps"
+                },
+                "authDefQos": {
+                    "5qi": 9,
+                    "arp": {
+                        "priorityLevel": 8,
+                        "preemptCap": "",
+                        "preemptVuln": ""
+                    },
+                    "priorityLevel": 8
+                },
+                "sessRuleId": "SessRuleId-1"
+            }
+        },
+        "pccRules": {
+            "PccRuleId-1": {
+                "flowInfos": [
+                    {
+                        "flowDescription": "permit out ip from any to assigned",
+                        "flowDirection": "DOWNLINK"
+                    }
+                ],
+                "pccRuleId": "PccRuleId-1",
+                "precedence": 100,
+                "refQosData": [
+                    "2"
+                ],
+                "refChgData": [
+                    "ChgId-1"
+                ]
+            }
+        },
+        "qosDecs": {
+            "2": {
+                "qosId": "2",
+                "5qi": 3,
+                "maxbrUl": "100 Mbps",
+                "maxbrDl": "100 Mbps",
+                "gbrUl": "0 Mbps",
+                "gbrDl": "0 Mbps"
+            }
+        },
+        "chgDecs": {
+            "ChgId-1": {
+                "chgId": "ChgId-1",
+                "meteringMethod": "VOLUME",
+                "online": true,
+                "ratingGroup": 1,
+                "reportingLevel": "RAT_GR_LEVEL"
+            }
+        },
+        "policyCtrlReqTriggers": [
+            "PLMN_CH",
+            "RES_MO_RE",
+            "AC_TY_CH",
+            "UE_IP_CH",
+            "PS_DA_OFF",
+            "DEF_QOS_CH",
+            "SE_AMBR_CH",
+            "QOS_NOTIF",
+            "RAT_TY_CH"
+        ],
+        "suppFeat": "000f"
+    }
+}
