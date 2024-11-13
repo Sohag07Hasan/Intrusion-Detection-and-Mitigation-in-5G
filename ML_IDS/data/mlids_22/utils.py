@@ -187,7 +187,7 @@ def extract_ip_addresses_from_flow(flow):
 # Monitor and process attack records
 def monitor_attacks(flow_id):
     source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
-    strategy = get_enforcment_strategy('type_1')
+    strategy = get_enforcment_strategy(type='type_1')
     # Load CSV file
     file_name = 'attack_records.csv'
     df = initialize_attack_record(file_name=file_name)
