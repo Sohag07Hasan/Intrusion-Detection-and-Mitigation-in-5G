@@ -1,5 +1,5 @@
-SmContext: urn:uuid:1306dc89-1039-488a-b9a3-cca8abe3c208	ip: 10.61.0.4	Supi: imsi-208930000000007
-SmContext: urn:uuid:ccccca8b-02ef-42c8-9b12-5a47bd76202c	ip: 10.61.0.2	Supi: imsi-208930000000006
+SmContext: urn:uuid:4f2283bb-83dd-4e9c-87ce-c28833c720b4	ip: 10.61.0.6	Supi: imsi-208930000000007
+SmContext: urn:uuid:72ee75fa-917b-4297-8dac-43e73a6d6e69	ip: 10.61.0.8	Supi: imsi-208930000000006
 SmContext: urn:uuid:9d8f3639-64c5-4caf-b284-4af8fa68856f	ip: 10.61.0.1	Supi: imsi-208930000000050
-SmContext: urn:uuid:89476f52-c3f4-43e2-9531-5df0c31c1bc6	ip: 10.61.0.3	Supi: imsi-208930000000005
-SmContext: urn:uuid:efd363af-c878-4c59-bbb0-28ea3fc6a834	ip: 10.61.0.5	Supi: imsi-208930000000008
+SmContext: urn:uuid:f5813a4d-d000-41d3-a728-2a0e61fc5199	ip: 10.61.0.7	Supi: imsi-208930000000005
+SmContext: urn:uuid:6236bc44-dfcd-409a-a585-c41bf7c30a8f	ip: 10.61.0.9	Supi: imsi-208930000000008

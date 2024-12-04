@@ -30,15 +30,15 @@ from utils import monitor_attacks, create_mapping_data, delete_files
 #scaller_save_path = "./scaler_k_3_n_5_f_55.pkl"
 model_save_path = "./RF_model_k_3_n_5_f_55.pkl"
 #path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
-path_of_pth_file = "./model_500000_1003.pth" #INSDN
+path_of_pth_file = "./model_500000_1002.pth" #INSDN
 
 
 #FLOW_DURATION = 1 #seconds
 PCKT_NUMBER = 3
 UDP_DURATION = 400 #seconds
-LABEL = "attack"
+LABEL = ""
 
-DIR_PATH = "./pcaps/attack/"
+DIR_PATH = "./pcaps/benign/"
 MIN_PCKT = 2
 OVERLAP = True
 INTERFACE = "eth2"
@@ -107,8 +107,15 @@ def process_pcap(pkt, file_id = "id"):
                 PCKT_CONTAINER[fwd_id] = [pkt]
                 TIMESTAMP[fwd_id] = pkt.time
 
-    if len(FEATURES) >= 100 and INTERFACE != None:
+    if len(FEATURES) >= 100:
         save_features()
+        # empty the global variables
+        PCKT_CONTAINER = {}   # { flow_id: [pckt_list]  }
+        TIMESTAMP = {}        # {flow_id: timestamp }
+        #FLOW_TIME = {}        # {flow_id: timestamp}
+        FLOW_COUNTER = {}
+        SUB_FLOW_COUNTER = {}
+        FEATURES = []         # [{ flow_id, protocol, bytes_received in last 1s
 
 # Load Scaller Modesl
 #with open(scaller_save_path, 'rb') as f:
@@ -178,6 +185,8 @@ def save_features():
     else:
         df = pd.DataFrame(FEATURES)
         df.to_csv(DATASET_PATH, index=False)
+
+
 
 def check_flow_termination(pkt, flow_id, protocol, file_id):
     if len(PCKT_CONTAINER[flow_id])<PCKT_NUMBER: # flow duration is not complete
@@ -249,8 +258,10 @@ def predict_attack(features, flow_id):
     transformed_features = df_encoded.values.astype(float)
     prediction = loaded_model.predict(transformed_features)
     if prediction[0] == 0:
+        rf_prediction = 'Attack'
         print(f"RF prediction: Attack")
     else:
+        rf_prediction = 'Benign'
         print(f"RF prediction: Benign")
     if flow_id in STATE.keys():
         tree_counter = np.zeros(101, dtype=int)
@@ -292,7 +303,7 @@ def predict_attack(features, flow_id):
 
         STATE_COUNTER[flow_id] += 1
 
-    return action
+    return action, rf_prediction
 
 
 
@@ -318,15 +329,18 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         feat_dict["iat_std"] = flow_features[3]
 
 
-        prediction = predict_attack(feat_dict, flow_id)
+        prediction, rf_prediction = predict_attack(feat_dict, flow_id)
 
         if prediction == 0:
+            rl_prediction = "Wait"
             print("RL prediction: Wait")
         elif prediction == 1:
+            rl_prediction = "Attack"
             print("RL prediction: Attack")
             print("Throttle the malicious IP")
             monitor_attacks(flow_id)
         elif prediction == 2:
+            rl_prediction = "Benign"
             print("RL prediction: Benign")
         else:
             print("Unknown prediciton from RL agent")
@@ -335,7 +349,9 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
 
         feat_dict["flow_id"] = f_id_to_save
 
-        feat_dict["label"] = prediction
+        feat_dict["RL_label"] = rl_prediction
+        feat_dict["RF_label"] = rf_prediction
+
         #print(feat_dict)
         FEATURES.append(feat_dict)
 
@@ -404,7 +420,7 @@ if __name__ == "__main__":
                 calc_features(PCKT_CONTAINER[f_id], f_id, protocol, str(i))
                 SUB_FLOW_COUNTER[f_id] += 1
 
-            save_features()
+            #save_features()
 
             # empty the global variables
             PCKT_CONTAINER = {}   # { flow_id: [pckt_list]  }

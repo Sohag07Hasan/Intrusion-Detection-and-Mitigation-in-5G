@@ -2,8 +2,8 @@
 Strategy = {
     'type_1': {
         'throttle_intervals': [5, 10, 15, 20],
-        'max_dl': ['50 Mbps', '30 Mbps', '20 Mbps', '10 Mbps'],
-        'max_ul': ['50 Mbps', '30 Mbps', '20 Mbps', '10 Mbps'],
+        'max_dl': ['10 Mbps', '5 Mbps', '3 Mbps', '1 Mbps'],
+        'max_ul': ['10 Mbps', '5 Mbps', '3 Mbps', '1 Mbps'],
         'qos': [20, 30, 40, 50],
         'pdu_session_deletion_limit': 25 
     },
