@@ -1,11 +1,11 @@
 
 Strategy = {
     'type_1': {
-        'throttle_intervals': [5, 10, 15, 20],
-        'max_dl': ['10 Mbps', '5 Mbps', '3 Mbps', '1 Mbps'],
-        'max_ul': ['10 Mbps', '5 Mbps', '3 Mbps', '1 Mbps'],
-        'qos': [20, 30, 40, 50],
-        'pdu_session_deletion_limit': 25 
+        'throttle_intervals': [60, 120, 180, 240, 300, 330, 360, 390, 420, 450],
+        'max_dl': ['3 Mbps', '2 Mbps', '2.5 Mbps', '2 Mbps', '1.5 Mbps', '1 Mbps', '500 Kbps', '200 Kbps', '100 Kbps', '50 Kbps'],
+        'max_ul': ['3 Mbps', '2 Mbps', '2.5 Mbps', '2 Mbps', '1.5 Mbps', '1 Mbps', '500 Kbps', '200 Kbps', '100 Kbps', '50 Kbps'],
+        'qos': [20, 40, 60, 80, 100, 110, 120, 130, 140, 150],
+        'pdu_session_deletion_limit': 500 
     },
 
     'type_2': {

@@ -205,7 +205,7 @@ def monitor_attacks(flow_id):
         # Delete PDU session
         mitigation_action = 'PDU Session Deleted'
         #delete_pdu_session(source_ip)  # Assuming you have a function for this action
-        #CoreNetworkAPI.release_pdu(source_ip)
+        CoreNetworkAPI.release_pdu(source_ip)
 
     elif attack_count + 1 in strategy['throttle_intervals']:
         # Apply throttle based on the number of attacks

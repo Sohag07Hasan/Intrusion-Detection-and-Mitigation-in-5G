@@ -9,6 +9,9 @@ services:
     volumes:
       - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
       - grafana-data:/var/lib/grafana
+    environment:
+    - GF_SECURITY_ADMIN_USER=new_admin
+    - GF_SECURITY_ADMIN_PASSWORD=admin
   
   prometheus:
     image: prom/prometheus:v2.46.0
@@ -38,14 +41,39 @@ services:
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-    expose:
-      - 8080
+    # expose:
+    #   - 8080
+    ports:
+      - "8080:8080"  # Bind cAdvisor's port 8080 to the host machine
+    command:
+      - "--housekeeping_interval=1s" # Align data collection frequency with Prometheus scrape interval
 
+
+  #collect node metrics
   nodeexporter:
     image: prom/node-exporter:v1.6.1
     expose:
       - 9100:9100
 
+
+  ##influx db to make it faster
+  influxdb:
+    container_name: influxdb
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"  # Expose InfluxDB's HTTP API
+    volumes:
+      - influxdb-data:/var/lib/influxdb2  # Persistent storage
+      - ./data/influxdb:/data
+    environment:
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=adminpassword
+      - INFLUXDB_BUCKET=real_time_metrics
+      - INFLUXDB_ORG=myorg
+      - INFLUXDB_INIT_MODE=setup
+
+
 volumes:
   grafana-data:
   prom-data:
+  influxdb-data:

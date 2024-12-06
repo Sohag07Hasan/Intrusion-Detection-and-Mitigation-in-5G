@@ -1,7 +1,10 @@
 global:
-  scrape_interval: 15s
-  scrape_timeout: 10s
-  evaluation_interval: 15s
+  scrape_interval: 1s
+  scrape_timeout: 1.5s
+  evaluation_interval: 1s
+
+rule_files:
+  - /etc/prometheus/recording_rules.yml  # Add recording rules if applicable
 
 scrape_configs:
 - job_name: cadvisor
@@ -15,15 +18,20 @@ scrape_configs:
       regex: '.*'
       target_label: instance
       replacement: 'cadv'
+  metric_relabel_configs:
+    - source_labels: [__name__]
+      regex: "container_network_.*"  # Only collect network-related metrics
+      action: keep
 
-- job_name: nodeexporter
-  honor_timestamps: true
-  scheme: http
-  static_configs:
-  - targets:
-    - nodeexporter:9100
-  relabel_configs:
-    - source_labels: [__address__]
-      regex: '.*'
-      target_label: instance
-      replacement: 'node'
+# Commented out nodeexporter to reduce load
+# - job_name: nodeexporter
+#   honor_timestamps: true
+#   scheme: http
+#   static_configs:
+#   - targets:
+#     - nodeexporter:9100
+#   relabel_configs:
+#     - source_labels: [__address__]
+#       regex: '.*'
+#       target_label: instance
+#       replacement: 'node'

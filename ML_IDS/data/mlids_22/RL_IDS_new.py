@@ -400,7 +400,7 @@ def initialize_ids():
     file_list = [
         './mapping_data.txt',
         './attack_records.csv',
-        './overlap_dataset_live.csv'
+        DATASET_PATH
     ]
     delete_files(file_list=file_list)
     create_mapping_data(mapping_data="mapping_data.txt")
