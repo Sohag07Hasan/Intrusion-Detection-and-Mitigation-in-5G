@@ -3,6 +3,7 @@ version: '3.8'
 services:
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:10.0.3
     ports:
       - 3005:3000
@@ -12,13 +13,16 @@ services:
     environment:
     - GF_SECURITY_ADMIN_USER=new_admin
     - GF_SECURITY_ADMIN_PASSWORD=admin
+    - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s ##make grafana refresh rate to 1 seconds
   
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:v2.46.0
     ports:
       - 9090:9090
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/recording_rules.yml:/etc/prometheus/recording_rules.yml
       - prom-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -32,6 +36,7 @@ services:
       - '--web.enable-lifecycle'
 
   cadvisor:
+    container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:v0.47.2
     privileged: true
     devices:
@@ -47,6 +52,8 @@ services:
       - "8080:8080"  # Bind cAdvisor's port 8080 to the host machine
     command:
       - "--housekeeping_interval=1s" # Align data collection frequency with Prometheus scrape interval
+      - "--disable_metrics=cpu,memory,disk,percpu"  # Disable CPU, memory, and disk metrics
+      - "--docker_only" ## docker container only
 
 
   #collect node metrics

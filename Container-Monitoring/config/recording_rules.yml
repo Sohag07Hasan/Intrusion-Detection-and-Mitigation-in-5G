@@ -2,6 +2,6 @@ groups:
   - name: cadvisor_network
     rules:
       - record: instance:container_network_receive_bytes_per_second
-        expr: rate(container_network_receive_bytes_total[1s])
+        expr: irate(container_network_receive_bytes_total[2s])
       - record: instance:container_network_transmit_bytes_per_second
-        expr: rate(container_network_transmit_bytes_total[1s])
+        expr: irate(container_network_transmit_bytes_total[2s])

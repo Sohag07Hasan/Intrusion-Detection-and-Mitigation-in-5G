@@ -1,6 +1,6 @@
 global:
   scrape_interval: 1s
-  scrape_timeout: 1.5s
+  scrape_timeout: 1s
   evaluation_interval: 1s
 
 rule_files:
@@ -19,9 +19,14 @@ scrape_configs:
       target_label: instance
       replacement: 'cadv'
   metric_relabel_configs:
-    - source_labels: [__name__]
+    - source_labels: [__name__] # Operate on metric names
       regex: "container_network_.*"  # Only collect network-related metrics
       action: keep
+    - source_labels: [name] # Operate on the container name label
+      regex: "^(ue.*|upf.*|server.*|mlids.*)$" # Specify container names to match
+      #regex: "ue22|ue21"
+      action: keep
+    # - action: drop # Drop all other metrics
 
 # Commented out nodeexporter to reduce load
 # - job_name: nodeexporter
