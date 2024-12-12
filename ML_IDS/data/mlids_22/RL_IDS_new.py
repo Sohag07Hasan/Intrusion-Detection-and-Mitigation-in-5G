@@ -24,7 +24,7 @@ from collections import deque
 
 #importing API functions
 #from utils import CoreNetworkAPI
-from utils import monitor_attacks, create_mapping_data, delete_files
+from utils import monitor_attacks, create_mapping_data, delete_files, monitor_attacks_based_on_time, should_write_features_now
 
 ##ML Variables
 #scaller_save_path = "./scaler_k_3_n_5_f_55.pkl"
@@ -107,7 +107,8 @@ def process_pcap(pkt, file_id = "id"):
                 PCKT_CONTAINER[fwd_id] = [pkt]
                 TIMESTAMP[fwd_id] = pkt.time
 
-    if len(FEATURES) >= 100:
+    #if len(FEATURES) >= 100:
+    if should_write_features_now():
         save_features()
         # empty the global variables
         PCKT_CONTAINER = {}   # { flow_id: [pckt_list]  }
@@ -259,10 +260,10 @@ def predict_attack(features, flow_id):
     prediction = loaded_model.predict(transformed_features)
     if prediction[0] == 0:
         rf_prediction = 'Attack'
-        print(f"RF prediction: Attack")
+        #print(f"RF prediction: Attack")
     else:
         rf_prediction = 'Benign'
-        print(f"RF prediction: Benign")
+        #print(f"RF prediction: Benign")
     if flow_id in STATE.keys():
         tree_counter = np.zeros(101, dtype=int)
         tree_counter[-1] = PCKT_NUMBER
@@ -333,17 +334,19 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
 
         if prediction == 0:
             rl_prediction = "Wait"
-            print("RL prediction: Wait")
+            #print("RL prediction: Wait")
         elif prediction == 1:
             rl_prediction = "Attack"
-            print("RL prediction: Attack")
-            print("Throttle the malicious IP")
-            monitor_attacks(flow_id)
+            #print("RL prediction: Attack")
+            #print("Throttle the malicious IP")
+            #monitor_attacks(flow_id)
+            monitor_attacks_based_on_time(flow_id)
         elif prediction == 2:
             rl_prediction = "Benign"
-            print("RL prediction: Benign")
+            #print("RL prediction: Benign")
         else:
-            print("Unknown prediciton from RL agent")
+            #print("Unknown prediciton from RL agent")
+            pass
 
         #print (f"Attack Detected: {f_id_to_save}")
 

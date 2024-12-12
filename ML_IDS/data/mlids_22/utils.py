@@ -4,8 +4,18 @@ import requests
 import ipaddress
 import pandas as pd
 from datetime import datetime
-from config import get_enforcment_strategy, MS_IP_POOL
+from config import get_enforcment_strategy, MS_IP_POOL, ATTACK_RECORD
 import os
+
+##Declaring global variables to store data
+FIRST_ATTACK_TIMESTAMP = 0
+CURRENT_INTERVAL = 0
+ATTACK_RECORDS_DF = pd.DataFrame(columns=['source_ip', 'dest_ip', 'flow_id', 'attack_timestamp', 'throttle_intervals', 'mitigation_action']) 
+
+LOCATION_URL = {}
+
+
+
 
 class CoreNetworkAPI:
     @staticmethod
@@ -19,7 +29,7 @@ class CoreNetworkAPI:
                 cntxt = cntxt.split(" ")[1].strip()
                 if _ip == ip:
                     url = f"http://smf{slice}.free5gc.org:8000/nsmf-pdusession/v1/sm-contexts/{cntxt}/release"
-                    print(url)
+                    print('PDU Session Deleted')
                     CoreNetworkAPI._send_curl_request(url, "POST")
                     break
         CoreNetworkAPI._update_mapping_file(cntxt, mapping_data)
@@ -180,8 +190,8 @@ def extract_ip_addresses_from_flow(flow):
             nonmatched_ip = ip
 
     # Output results
-    print(f"Source IP:", matched_ip)
-    print("Destination IP:", nonmatched_ip)
+    # print(f"Source IP:", matched_ip)
+    # print("Destination IP:", nonmatched_ip)
     return matched_ip, nonmatched_ip
 
 # Monitor and process attack records
@@ -189,7 +199,7 @@ def monitor_attacks(flow_id):
     source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
     strategy = get_enforcment_strategy(type='type_1')
     # Load CSV file
-    file_name = 'attack_records.csv'
+    file_name = ATTACK_RECORD
     df = initialize_attack_record(file_name=file_name)
       # Timestamp for current attack
     attack_timestamp = datetime.now()
@@ -228,11 +238,104 @@ def monitor_attacks(flow_id):
     df = pd.concat([df, new_record], ignore_index=True)
     df.to_csv(file_name, index=False)
 
-    print(f"Attack Detected: from {source_ip} to {destination_ip}, action taken: {mitigation_action}")
+    # print(f"Attack Detected: from {source_ip} to {destination_ip}, action taken: {mitigation_action}")
 
+
+# Monitor and process attack records
+def monitor_attacks_based_on_time(flow_id):
+    #global FIRST_ATTACK_TIMESTAMP
+    global ATTACK_RECORDS_DF
+    #global CURRENT_INTERVAL
+    global LOCATION_URL
+
+    source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
+    strategy = get_enforcment_strategy(type='type_2')
+    # Load CSV file
+    file_name = ATTACK_RECORD
+
+    on_going_attack_timestamp = datetime.now()
+
+    # Check if the source IP already has records in the file
+    attacks = ATTACK_RECORDS_DF[ATTACK_RECORDS_DF['source_ip'] == source_ip]
+
+    if len(attacks) > 0:
+        first_attack_timestamp = min(attacks.get('attack_timestamp'))
+    else:
+        first_attack_timestamp = on_going_attack_timestamp
+
+    # Default mitigation action (None unless thresholds are hit)
+    attack_interval = (on_going_attack_timestamp - first_attack_timestamp).total_seconds()
+    interval = find_interval(attack_interval, strategy['throttle_intervals'])
+
+    mitigation_action = ''
+    is_pdu_session_deleted = False
+   
+    if attack_interval >= strategy['pdu_session_deletion_limit']:
+        # Delete PDU session
+        mitigation_action = 'PDU Session Deleted'
+        #delete_pdu_session(source_ip)  # Assuming you have a function for this action
+        CoreNetworkAPI.release_pdu(source_ip)
+        is_pdu_session_deleted = True  
+        print("PDU Session deleted")      
+    else:        
+        enforcment_applied = attacks[attacks['throttle_intervals'] == interval]
+        if len(enforcment_applied) <= 0:
+            if interval > 0:
+                index = strategy['throttle_intervals'].index(interval)
+                max_dl, max_ul, qos = strategy["max_dl"][index], strategy["max_ul"][index], strategy["qos"][index]
+                mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'
+                print(mitigation_action)
+                #CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
+                if source_ip in LOCATION_URL.keys():
+                    delete_policy_authorization(LOCATION_URL[source_ip])   
+
+                response = send_policy_authorization_request(source_ip, destination_ip, max_dl, max_ul, max_dl, max_ul)
+                if response.status_code == 201:
+                    #print(response)
+                    print(f"Location header for {source_ip}: {response.headers.get('Location')}")
+                    LOCATION_URL[source_ip] = response.headers.get("Location")
+                else:
+                    print('location not found')
+
+    
+    # Create a new record for the current attack
+    new_record = pd.DataFrame([{
+        'source_ip': source_ip,
+        'dest_ip': destination_ip,
+        'flow_id': flow_id,
+        'attack_timestamp': on_going_attack_timestamp,
+        'throttle_intervals': interval,
+        'mitigation_action': mitigation_action
+    }])
+    
+    # Append the new attack to the dataframe and save to CSV
+    ATTACK_RECORDS_DF = pd.concat([ATTACK_RECORDS_DF, new_record], ignore_index=True)
+    #df.to_csv(file_name, index=False)
+    if is_pdu_session_deleted:
+        ATTACK_RECORDS_DF.to_csv(file_name, index=False)
+        #print( LOCATION_URL)
+
+    #print(f"Attack Detected: from {source_ip} to {destination_ip}, action taken: {mitigation_action}")
+
+
+def find_interval(value, intervals):
+    for interval in intervals:
+        if value < interval:
+            return interval - (intervals[1] - intervals[0])
+    return intervals[-1]
 
 # Initialize or load attack_records CSV file
 def initialize_attack_record(file_name):
+    try:
+        df = pd.read_csv(file_name)
+    except FileNotFoundError:
+        # Create CSV with headers if it doesn't exist
+        df = pd.DataFrame(columns=['source_ip', 'dest_ip', 'flow_id', 'attack_timestamp', 'mitigation_action'])
+        df.to_csv(file_name, index=False)
+    return df
+
+# Initialize or load attack_records CSV file
+def initialize_attack_record_in_memory(file_name):
     try:
         df = pd.read_csv(file_name)
     except FileNotFoundError:
@@ -253,4 +356,74 @@ def delete_files(file_list=[]):
                 print(f"Error deleting {file_path}: {e}")
         else:
             print(f"File does not exist: {file_path}")
+
+
+def send_policy_authorization_request(
+    ue_ipv4, 
+    destination_ip,  # Pass only the IP
+    mar_bw_dl, 
+    mar_bw_ul, 
+    mir_bw_dl, 
+    mir_bw_ul
+):
+    url = "http://pcf.free5gc.org:8000/npcf-policyauthorization/v1/app-sessions"
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    # Build the FDescs list with the provided IP
+    f_descs = [f"permit inout ip from {destination_ip} to assigned"]
+    
+    payload = {
+        "ascReqData": {
+            #"dnn": "internet",
+            "notifUri": "string",
+            "medComponents": {
+                "1": {
+                    "MedCompN": 1,
+                    "MarBwDl": mar_bw_dl,
+                    "MarBwUl": mar_bw_ul,
+                    "MirBwDl": mir_bw_dl,
+                    "MirBwUl": mir_bw_ul,
+                    "MedType": "APPLICATION",
+                    "FStatus": "ENABLED",
+                    "MedSubComps": {
+                        "1": {
+                            "FNum": 1,
+                            "FDescs": f_descs,
+                            "FStatus": "ENABLED"
+                        }
+                    }
+                }
+            },
+            #"supi": "imsi-208930000000006",
+            "suppFeat": "5",
+            "ueIpv4": ue_ipv4
+        }
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+    except Exception as e:
+        print("The error is: ",e)
+
+    return response
+
+def delete_policy_authorization(location_url):
+    delete_url = f"{location_url}/delete"
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    response = requests.post(delete_url, headers=headers)
+    return response
+
+
+## utility function tto check if attack record file exits. If exists, then it will send true
+# if attack record file exits this will write the features. Othereise it won't write the features
+def should_write_features_now():
+    if os.path.exists(ATTACK_RECORD):
+        return True
+    else:
+        return False
 

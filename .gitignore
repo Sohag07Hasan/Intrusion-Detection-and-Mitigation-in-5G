@@ -10,6 +10,7 @@
 #DVWA server ignring
 /Servers/DVWA/
 /Servers/dvwa_keys/
+/Servers/DVWA2/
 
 #ingoring big files pcap files from servers
 #/Servers/data/server11/*

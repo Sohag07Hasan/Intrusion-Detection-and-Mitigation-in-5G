@@ -95,7 +95,7 @@ services:
         aliases:
           - server32
 
-  # Server to be connected to mlids
+  # Server to be connected to mlids (upf -> mlids -> server)
   server_mlids_21:
     container_name: server_mlids_21
     image: ubuntu-uofr:latest
@@ -110,6 +110,51 @@ services:
         ipv4_address: 10.50.50.21
         aliases:
           - server_mlids_21
+
+  server_mlids_22:
+    container_name: server_mlids_22
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    networks:
+      after_mlids:
+        ipv4_address: 10.50.50.22
+        aliases:
+          - server_mlids_22
+
+  server_mlids_12:
+    container_name: server_mlids_12
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    networks:
+      after_mlids:
+        ipv4_address: 10.50.50.12
+        aliases:
+          - server_mlids_12
+
+  server_mlids_13:
+    container_name: server_mlids_13
+    image: ubuntu-uofr:latest
+    command: tail -f /dev/null
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    networks:
+      after_mlids:
+        ipv4_address: 10.50.50.13
+        aliases:
+          - server_mlids_13
 
 
   # vulnerable webserver 
@@ -156,6 +201,51 @@ services:
         aliases:
           - dvwadb
     restart: unless-stopped 
+
+
+
+    # Vulnerable webserver
+  dvwa2:
+    image: sohag07hasan/dvwa:v1  # Using your custom image
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./DVWA2/dvwa:/DVWA/dvwa
+      - ./config:/config
+      - ./data:/data
+    environment:
+      - DB_SERVER=db2
+    depends_on:
+      - db2
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.15
+        aliases:
+          - dvwa2
+      after_mlids:
+        ipv4_address: 10.50.50.51
+        aliases:
+          - dvwa2
+    ports:
+      - 127.0.0.1:4281:443
+    restart: unless-stopped
+
+  # Database for the vulnerable webserver
+  db2:
+    image: sohag07hasan/dvwadb:v1  # Using your custom database image
+    environment:
+      - MYSQL_ROOT_PASSWORD=dvwa
+      - MYSQL_DATABASE=dvwa
+      - MYSQL_USER=dvwa
+      - MYSQL_PASSWORD=p@ssw0rd
+    volumes:
+      - ./DVWA2/dvwa:/var/lib/mysql
+    networks:
+      publicnet:
+        ipv4_address: 10.200.200.116
+        aliases:
+          - dvwadb2
+    restart: unless-stopped
 
 networks:
   publicnet:  # Name of the new network
