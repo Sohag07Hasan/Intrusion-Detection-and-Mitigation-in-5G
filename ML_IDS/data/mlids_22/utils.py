@@ -274,6 +274,8 @@ def monitor_attacks_based_on_time(flow_id):
         # Delete PDU session
         mitigation_action = 'PDU Session Deleted'
         #delete_pdu_session(source_ip)  # Assuming you have a function for this action
+        if source_ip in LOCATION_URL.keys():
+            delete_policy_authorization(LOCATION_URL[source_ip]) 
         CoreNetworkAPI.release_pdu(source_ip)
         is_pdu_session_deleted = True  
         print("PDU Session deleted")      
