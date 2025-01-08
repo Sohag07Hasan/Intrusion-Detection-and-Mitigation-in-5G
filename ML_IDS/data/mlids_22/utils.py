@@ -4,7 +4,7 @@ import requests
 import ipaddress
 import pandas as pd
 from datetime import datetime
-from config import get_enforcment_strategy, MS_IP_POOL, ATTACK_RECORD
+from config import get_enforcment_strategy, MS_IP_POOL, ATTACK_RECORD, SLICE_MAPPING_WITH_MSIP
 import os
 
 ##Declaring global variables to store data
@@ -20,7 +20,7 @@ LOCATION_URL = {}
 class CoreNetworkAPI:
     @staticmethod
     def release_pdu(ip, mapping_data="mapping_data.txt", slice=2):
-        cntxt = None
+        cntxt = None        
         with open(mapping_data, "r") as f:
             lines = f.readlines()
             for l in lines:
@@ -28,11 +28,29 @@ class CoreNetworkAPI:
                 _ip = _ip.split(":")[1].strip()
                 cntxt = cntxt.split(" ")[1].strip()
                 if _ip == ip:
-                    url = f"http://smf{slice}.free5gc.org:8000/nsmf-pdusession/v1/sm-contexts/{cntxt}/release"
-                    print('PDU Session Deleted')
+                    slice_id = CoreNetworkAPI.get_slice_mapping(ip)
+                    url = f"http://smf{slice_id}.free5gc.org:8000/nsmf-pdusession/v1/sm-contexts/{cntxt}/release"
+                    #print('PDU Session Deleted')
                     CoreNetworkAPI._send_curl_request(url, "POST")
                     break
         CoreNetworkAPI._update_mapping_file(cntxt, mapping_data)
+
+    @staticmethod
+    def get_slice_mapping(ip_address: str) -> str:
+        """
+        Finds the slice mapping for the given IP address.
+
+        Args:
+            ip_address (str): The IP address to find the mapping for.
+
+        Returns:
+            str: The corresponding value from SLICE_MAPPING_WITH_MSIP, or None if not found.
+        """
+        for index, subnet in enumerate(MS_IP_POOL):
+            if ipaddress.ip_address(ip_address) in ipaddress.ip_network(subnet):
+                return SLICE_MAPPING_WITH_MSIP[index]
+        return None  # Return None if the IP does not belong to any subnet
+
 
     @staticmethod
     def change_throughput(ip, mapping_data="mapping_data.txt", slice=2, max_dl='5 Mbps', max_ul='1 Mbps', qos="20"):
@@ -45,7 +63,8 @@ class CoreNetworkAPI:
                 _ip = _ip.split(":")[1].strip()
                 cntxt = cntxt.split(" ")[1].strip()
                 if _ip == ip:
-                    url = f"http://smf{slice}.free5gc.org:8000/nsmf-callback/sm-policies/{cntxt}/update"
+                    slice_id = CoreNetworkAPI.get_slice_mapping(ip)
+                    url = f"http://smf{slice_id}.free5gc.org:8000/nsmf-callback/sm-policies/{cntxt}/update"
                     print(url)
                     break
         
@@ -134,8 +153,8 @@ class CoreNetworkAPI:
                 sm_contexts = [k["SmContextRef"] for k in item["PduSessions"]]
 
                 for smcntxt in sm_contexts:
-                    for slice in slices:
-                        sm_url = f"http://smf{slice}.free5gc.org:8000/nsmf-oam/v1/ue-pdu-session-info/{smcntxt}"
+                    for sl in slices:
+                        sm_url = f"http://smf{sl}.free5gc.org:8000/nsmf-oam/v1/ue-pdu-session-info/{smcntxt}"
                         json_response = CoreNetworkAPI._send_curl_request(sm_url, "GET")
                         if json_response == "null" or json_response is None:
                             continue
@@ -156,7 +175,7 @@ def change_throughput(ip):
 
 ## Create the mapping data
 def create_mapping_data(mapping_data="mapping_data.txt"):
-    CoreNetworkAPI.create_mapping_data(mapping_data=mapping_data, slices=[2])
+    CoreNetworkAPI.create_mapping_data(mapping_data=mapping_data, slices=["", 2])
 
 ##Extract UE and Server IP:
 def extract_ip_addresses_from_flow(flow):
