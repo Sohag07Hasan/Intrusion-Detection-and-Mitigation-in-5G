@@ -297,7 +297,7 @@ def monitor_attacks_based_on_time(flow_id):
             delete_policy_authorization(LOCATION_URL[source_ip]) 
         CoreNetworkAPI.release_pdu(source_ip)
         is_pdu_session_deleted = True  
-        print("PDU Session deleted")      
+        print(f"{source_ip}: PDU Session deleted")      
     else:        
         enforcment_applied = attacks[attacks['throttle_intervals'] == interval]
         if len(enforcment_applied) <= 0:
@@ -305,7 +305,7 @@ def monitor_attacks_based_on_time(flow_id):
                 index = strategy['throttle_intervals'].index(interval)
                 max_dl, max_ul, qos = strategy["max_dl"][index], strategy["max_ul"][index], strategy["qos"][index]
                 mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'
-                print(mitigation_action)
+                print(f"{source_ip}: {mitigation_action}")
                 #CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
                 if source_ip in LOCATION_URL.keys():
                     delete_policy_authorization(LOCATION_URL[source_ip])   
@@ -313,10 +313,10 @@ def monitor_attacks_based_on_time(flow_id):
                 response = send_policy_authorization_request(source_ip, destination_ip, max_dl, max_ul, max_dl, max_ul)
                 if response.status_code == 201:
                     #print(response)
-                    print(f"Location header for {source_ip}: {response.headers.get('Location')}")
+                    print(f"{source_ip} location: {response.headers.get('Location')}")
                     LOCATION_URL[source_ip] = response.headers.get("Location")
                 else:
-                    print('location not found')
+                    print(f'{source_ip} location: not found')
 
     
     # Create a new record for the current attack

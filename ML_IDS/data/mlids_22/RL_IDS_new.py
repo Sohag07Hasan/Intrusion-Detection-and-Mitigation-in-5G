@@ -26,25 +26,28 @@ from collections import deque
 #from utils import CoreNetworkAPI
 from utils import monitor_attacks, create_mapping_data, delete_files, monitor_attacks_based_on_time, should_write_features_now
 
-##ML Variables
-#scaller_save_path = "./scaler_k_3_n_5_f_55.pkl"
-model_save_path = "./RF_model_k_3_n_5_f_55.pkl"
-#path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
-path_of_pth_file = "./model_500000_1002.pth" #INSDN
-
 
 #FLOW_DURATION = 1 #seconds
-PCKT_NUMBER = 3
+PCKT_NUMBER = 5
 UDP_DURATION = 400 #seconds
 LABEL = ""
 
 DIR_PATH = "./pcaps/benign/"
 MIN_PCKT = 2
-OVERLAP = True
+OVERLAP = False
 INTERFACE = "eth2"
 
 STATE_SIZE = 5
 ACTION_SIZE = 3
+
+
+##ML Variables
+#scaller_save_path = "./scaler_k_3_n_5_f_55.pkl"
+model_save_path = f"./rf_models/RF_model_k_{PCKT_NUMBER}_n_5_f_55_no_overlap_iperf.pkl"
+#path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
+path_of_pth_file = "./rl_models/model_500000_1002.pth" #INSDN
+
+
 
 if OVERLAP:    
     DATASET_PATH = "./overlap_dataset_"+str(PCKT_NUMBER)+".csv"
