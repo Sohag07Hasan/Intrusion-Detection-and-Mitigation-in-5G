@@ -220,7 +220,8 @@ def monitor_attacks(flow_id):
     # Load CSV file
     file_name = ATTACK_RECORD
     df = initialize_attack_record(file_name=file_name)
-      # Timestamp for current attack
+
+    # Timestamp for current attack
     attack_timestamp = datetime.now()
 
     # Check if the source IP already has records in the file
@@ -261,26 +262,34 @@ def monitor_attacks(flow_id):
 
 
 # Monitor and process attack records
-def monitor_attacks_based_on_time(flow_id):
+def monitor_attacks_based_on_time_not_in_use(flow_id):
     #global FIRST_ATTACK_TIMESTAMP
     global ATTACK_RECORDS_DF
     #global CURRENT_INTERVAL
     global LOCATION_URL
 
+    #define the first attack
+    is_first_attack = False
+
     source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
     strategy = get_enforcment_strategy(type='type_2')
-    # Load CSV file
+
+    # Load df
     file_name = ATTACK_RECORD
 
     on_going_attack_timestamp = datetime.now()
 
     # Check if the source IP already has records in the file
     attacks = ATTACK_RECORDS_DF[ATTACK_RECORDS_DF['source_ip'] == source_ip]
+    #attacks = attacks[attacks['mitigation_action'].nona()] ##excldue non action records
+
 
     if len(attacks) > 0:
         first_attack_timestamp = min(attacks.get('attack_timestamp'))
+        #is_first_attack = False
     else:
         first_attack_timestamp = on_going_attack_timestamp
+        #is_first_attack = True
 
     # Default mitigation action (None unless thresholds are hit)
     attack_interval = (on_going_attack_timestamp - first_attack_timestamp).total_seconds()
@@ -337,6 +346,90 @@ def monitor_attacks_based_on_time(flow_id):
         #print( LOCATION_URL)
 
     #print(f"Attack Detected: from {source_ip} to {destination_ip}, action taken: {mitigation_action}")
+
+
+
+# Monitor and process attack records
+def monitor_attacks_based_on_time(flow_id):
+    #global FIRST_ATTACK_TIMESTAMP
+    global ATTACK_RECORDS_DF
+    #global CURRENT_INTERVAL
+    global LOCATION_URL
+
+    is_pdu_session_deleted = False
+    mitigation_action = ''
+
+    source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
+    strategy = get_enforcment_strategy(type='type_2')
+
+    # Load df
+    file_name = ATTACK_RECORD
+
+    on_going_attack_timestamp = datetime.now()
+
+    # Check if the source IP already has records in the file
+    attacks = ATTACK_RECORDS_DF[ATTACK_RECORDS_DF['source_ip'] == source_ip]
+    mitigations = attacks[attacks['mitigation_action'] != ''] ##excldue non action records
+    mitigation_count = len(mitigations)
+
+    #print(f'mitigation_count: {mitigation_count}')
+
+    if mitigation_count == 0:
+       mitigation_action = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy) 
+    else:
+        #last_mitigation_timestamp = mitigations.iat[-1, 'attack_timestamp'] 
+        last_mitigation_timestamp = mitigations.iloc[-1]['attack_timestamp']       
+        next_mitigation_interval = strategy['throttle_intervals'][mitigation_count] #in seconds
+        on_going_attack_interval = (on_going_attack_timestamp - last_mitigation_timestamp).total_seconds()        
+        if on_going_attack_interval >= next_mitigation_interval:
+            if strategy["max_dl"][mitigation_count] == 'del_pdu':
+                if source_ip in LOCATION_URL.keys():
+                    delete_policy_authorization(LOCATION_URL[source_ip]) 
+                CoreNetworkAPI.release_pdu(source_ip)
+                is_pdu_session_deleted = True  
+                print(f"{source_ip}: PDU Session deleted") 
+            else:
+                mitigation_action = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy)
+          
+    # Create a new record for the current attack
+    new_record = pd.DataFrame([{
+        'source_ip': source_ip,
+        'dest_ip': destination_ip,
+        'flow_id': flow_id,
+        'attack_timestamp': on_going_attack_timestamp,
+        'throttle_intervals': mitigation_count,
+        'mitigation_action': mitigation_action
+    }])
+    
+    # Append the new attack to the dataframe and save to CSV
+    ATTACK_RECORDS_DF = pd.concat([ATTACK_RECORDS_DF, new_record], ignore_index=True)
+
+    if is_pdu_session_deleted:
+        ATTACK_RECORDS_DF.to_csv(file_name, index=False)
+
+## enforce mitigation
+def enforce_mitigation(source_ip, destination_ip, mitigation_index, strategy):
+    global ATTACK_RECORDS_DF
+    #global CURRENT_INTERVAL
+    global LOCATION_URL
+
+    max_dl, max_ul, qos = strategy["max_dl"][mitigation_index], strategy["max_ul"][mitigation_index], strategy["qos"][mitigation_index]
+    mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'            
+    print(f"{source_ip}: {mitigation_action}")
+
+    #CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
+    if source_ip in LOCATION_URL.keys():
+        delete_policy_authorization(LOCATION_URL[source_ip])   
+
+    response = send_policy_authorization_request(source_ip, destination_ip, max_dl, max_ul, max_dl, max_ul)
+    if response.status_code == 201:
+        print(f"{source_ip} location: {response.headers.get('Location')}")
+        LOCATION_URL[source_ip] = response.headers.get("Location")
+    else:
+        print(f'{source_ip} location: not found')
+
+    return mitigation_action
+
 
 
 def find_interval(value, intervals):
