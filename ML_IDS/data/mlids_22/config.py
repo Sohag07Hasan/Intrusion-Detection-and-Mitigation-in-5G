@@ -11,10 +11,10 @@ Strategy = {
 
     'type_2': {
         'policy': 'attack_duration',
-        'throttle_intervals': [0, 30, 30, 30, 30, 30],        
-        'max_dl': ['1 Mbps', '600 Kbps', '400 Kbps', '200 Kbps', '100 Kbps', 'del_pdu'],
-        'max_ul': ['1 Mbps', '600 Kbps', '400 Kbps', '200 Kbps', '100 Kbps', 'del_pdu'],
-        'qos': [10, 20, 30, 40, 50, 60],
+        'throttle_intervals': [0, 40, 40, 40],      
+        'max_dl': ['2 Mbps', '1 Mbps', '100 Kbps', 'del_pdu'],
+        'max_ul': ['2 Mbps', '1 Mbps', '100 Kbps', 'del_pdu'],
+        'qos': [10, 20, 30, 40],
         #'pdu_session_deletion_limit': 150
     },
 
@@ -26,6 +26,16 @@ Strategy = {
     #     'qos': [20, 30, 40, 50],
     #     'pdu_session_deletion_limit': 150
     # },
+
+    'type_3': {
+        'policy': 'attack_duration',
+        'throttle_intervals': [0, 40, 40, 40],     #seconds 
+        'max_dl': ['3 Mbps', '2 Mbps', '1 Mbps', '1 Kbps'],
+        'max_ul': ['3 Mbps', '2 Mbps', '1 Mbps', '1 Kbps'],
+        'qos': [10, 20, 30, 40],
+        'throttle_removal_interval': 60 #seconds
+        #'pdu_session_deletion_limit': 150
+    },
 
 
 }

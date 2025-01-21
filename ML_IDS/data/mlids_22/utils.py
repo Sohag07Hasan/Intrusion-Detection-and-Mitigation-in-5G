@@ -10,7 +10,7 @@ import os
 ##Declaring global variables to store data
 FIRST_ATTACK_TIMESTAMP = 0
 CURRENT_INTERVAL = 0
-ATTACK_RECORDS_DF = pd.DataFrame(columns=['source_ip', 'dest_ip', 'flow_id', 'attack_timestamp', 'throttle_intervals', 'mitigation_action']) 
+ATTACK_RECORDS_DF = pd.DataFrame(columns=['source_ip', 'dest_ip', 'flow_id', 'attack_timestamp', 'throttle_intervals', 'mitigation_action', 'restore']) 
 
 LOCATION_URL = {}
 
@@ -350,7 +350,7 @@ def monitor_attacks_based_on_time_not_in_use(flow_id):
 
 
 # Monitor and process attack records
-def monitor_attacks_based_on_time(flow_id):
+def monitor_attacks_based_on_time(flow_id, prediction):
     #global FIRST_ATTACK_TIMESTAMP
     global ATTACK_RECORDS_DF
     #global CURRENT_INTERVAL
@@ -358,29 +358,43 @@ def monitor_attacks_based_on_time(flow_id):
 
     is_pdu_session_deleted = False
     mitigation_action = ''
+    location_url = ''
+    restore = ''
 
     source_ip, destination_ip = extract_ip_addresses_from_flow(flow_id)
-    strategy = get_enforcment_strategy(type='type_2')
+    strategy = get_enforcment_strategy(type='type_3')
 
     # Load df
     file_name = ATTACK_RECORD
-
-    on_going_attack_timestamp = datetime.now()
+    on_going_attack_timestamp = on_going_benign_timestamp = datetime.now()
 
     # Check if the source IP already has records in the file
     attacks = ATTACK_RECORDS_DF[ATTACK_RECORDS_DF['source_ip'] == source_ip]
-    mitigations = attacks[attacks['mitigation_action'] != ''] ##excldue non action records
+    mitigations = attacks[(attacks['mitigation_action'] != '') & (attacks['restore'] != 'restored')] ##excldue non action records
     mitigation_count = len(mitigations)
+    #last_attack_timestamp = attacks[attacks['restore'] != 'restored'].iloc[-1]['attack_timestamp']
 
-    #print(f'mitigation_count: {mitigation_count}')
-
-    if mitigation_count == 0:
-       mitigation_action = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy) 
+    if not attacks[attacks['restore'] != 'restored'].empty:
+        last_attack_timestamp = attacks[attacks['restore'] != 'restored'].iloc[-1]['attack_timestamp']
     else:
-        #last_mitigation_timestamp = mitigations.iat[-1, 'attack_timestamp'] 
-        last_mitigation_timestamp = mitigations.iloc[-1]['attack_timestamp']       
+        last_attack_timestamp = None  # or some default value
+    
+    if prediction == 'benign' and last_attack_timestamp is not None:
+        on_going_attack_benign_interval = (on_going_benign_timestamp - last_attack_timestamp).total_seconds()
+        if on_going_attack_benign_interval >= strategy['throttle_removal_interval']:
+            if source_ip in LOCATION_URL.keys():
+                delete_policy_authorization(LOCATION_URL[source_ip])
+                ATTACK_RECORDS_DF.loc[ATTACK_RECORDS_DF['source_ip'] == source_ip, 'restore'] = 'restored'
+                restore = 'restored'
+                print(f"{source_ip}: Throughput Restored")     
+
+    elif prediction == 'attack' and mitigation_count == 0:
+        mitigation_action, location_url = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy) 
+    elif prediction == 'attack' and mitigation_count < len(strategy['throttle_intervals']):
+        last_mitigation_timestamp = mitigations.iloc[-1]['attack_timestamp']      
         next_mitigation_interval = strategy['throttle_intervals'][mitigation_count] #in seconds
         on_going_attack_interval = (on_going_attack_timestamp - last_mitigation_timestamp).total_seconds()        
+            
         if on_going_attack_interval >= next_mitigation_interval:
             if strategy["max_dl"][mitigation_count] == 'del_pdu':
                 if source_ip in LOCATION_URL.keys():
@@ -389,23 +403,29 @@ def monitor_attacks_based_on_time(flow_id):
                 is_pdu_session_deleted = True  
                 print(f"{source_ip}: PDU Session deleted") 
             else:
-                mitigation_action = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy)
-          
+                mitigation_action, location_url = enforce_mitigation(source_ip, destination_ip, mitigation_count, strategy)
+    else:
+        pass
     # Create a new record for the current attack
-    new_record = pd.DataFrame([{
-        'source_ip': source_ip,
-        'dest_ip': destination_ip,
-        'flow_id': flow_id,
-        'attack_timestamp': on_going_attack_timestamp,
-        'throttle_intervals': mitigation_count,
-        'mitigation_action': mitigation_action
-    }])
-    
-    # Append the new attack to the dataframe and save to CSV
-    ATTACK_RECORDS_DF = pd.concat([ATTACK_RECORDS_DF, new_record], ignore_index=True)
+    if prediction == 'attack':
+        new_record = pd.DataFrame([{
+            'source_ip': source_ip,
+            'dest_ip': destination_ip,
+            'flow_id': flow_id,
+            'attack_timestamp': on_going_attack_timestamp,
+            'throttle_intervals': mitigation_count,
+            'mitigation_action': mitigation_action,
+            'restore': restore
+        }])
 
-    if is_pdu_session_deleted:
-        ATTACK_RECORDS_DF.to_csv(file_name, index=False)
+        # Append the new attack to the dataframe and save to CSV
+        ATTACK_RECORDS_DF = pd.concat([ATTACK_RECORDS_DF, new_record], ignore_index=True)
+
+        if is_pdu_session_deleted or restore == 'restored':
+            ATTACK_RECORDS_DF.to_csv(file_name, index=False)
+        if mitigation_action:
+            print(f'{source_ip}: {mitigation_action}; location_url: {location_url}')
+
 
 ## enforce mitigation
 def enforce_mitigation(source_ip, destination_ip, mitigation_index, strategy):
@@ -413,22 +433,26 @@ def enforce_mitigation(source_ip, destination_ip, mitigation_index, strategy):
     #global CURRENT_INTERVAL
     global LOCATION_URL
 
-    max_dl, max_ul, qos = strategy["max_dl"][mitigation_index], strategy["max_ul"][mitigation_index], strategy["qos"][mitigation_index]
-    mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'            
-    print(f"{source_ip}: {mitigation_action}")
+    location_url = ''
+    mitigation_action = ''
 
-    #CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
-    if source_ip in LOCATION_URL.keys():
-        delete_policy_authorization(LOCATION_URL[source_ip])   
+    if mitigation_index < len(strategy["max_dl"]):
 
-    response = send_policy_authorization_request(source_ip, destination_ip, max_dl, max_ul, max_dl, max_ul)
-    if response.status_code == 201:
-        print(f"{source_ip} location: {response.headers.get('Location')}")
-        LOCATION_URL[source_ip] = response.headers.get("Location")
-    else:
-        print(f'{source_ip} location: not found')
+        max_dl, max_ul, qos = strategy["max_dl"][mitigation_index], strategy["max_ul"][mitigation_index], strategy["qos"][mitigation_index]
+        mitigation_action = f'max_ul: {max_ul}, max_dl: {max_dl}'            
+  
+        #CoreNetworkAPI.change_throughput(source_ip, mapping_data="mapping_data.txt", slice=2, max_dl=max_dl, max_ul=max_ul, qos=qos)
+        if source_ip in LOCATION_URL.keys():
+            delete_policy_authorization(LOCATION_URL[source_ip])   
 
-    return mitigation_action
+        response = send_policy_authorization_request(source_ip, destination_ip, max_dl, max_ul, max_dl, max_ul)
+        #print(response)
+        if response.status_code == 201:
+            #print(f"{source_ip} location: {response.headers.get('Location')}")
+            location_url = response.headers.get('Location')
+            LOCATION_URL[source_ip] = location_url
+
+    return mitigation_action, location_url
 
 
 

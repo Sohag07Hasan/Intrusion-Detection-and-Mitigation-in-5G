@@ -45,7 +45,7 @@ ACTION_SIZE = 3
 #scaller_save_path = "./scaler_k_3_n_5_f_55.pkl"
 model_save_path = f"./rf_models/RF_model_k_{PCKT_NUMBER}_n_5_f_55_no_overlap_iperf.pkl"
 #path_of_pth_file = "./rl_models/RL_5GNIDD/model_50000_3.pth" #5GNIDD
-path_of_pth_file = "./rl_models/model_500000_1002.pth" #INSDN
+path_of_pth_file = "./rl_models/model_100000_1002.pth" #INSDN
 
 
 
@@ -338,15 +338,17 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         if prediction == 0:
             rl_prediction = "Wait"
             #print("RL prediction: Wait")
+            #monitor_attacks_based_on_time(flow_id, 'wait')
         elif prediction == 1:
             rl_prediction = "Attack"
             #print("RL prediction: Attack")
             #print("Throttle the malicious IP")
             #monitor_attacks(flow_id)
-            monitor_attacks_based_on_time(flow_id)
+            monitor_attacks_based_on_time(flow_id, 'attack')
         elif prediction == 2:
             rl_prediction = "Benign"
             #print("RL prediction: Benign")
+            monitor_attacks_based_on_time(flow_id, 'benign')
         else:
             #print("Unknown prediciton from RL agent")
             pass
