@@ -33,7 +33,7 @@ case $input_command in
     #docker compose -f ./free5gc-compose-UofR/docker-compose-ran.yaml down
     ;;
   "ue up")
-    echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
+    echo "Executing ./free5gc-compose-UofR/docker-compose-ue.yaml up..."
     docker compose -f ./free5gc-compose-UofR/docker-compose-ue.yaml up -d > /dev/null 2>&1
     ;;
   "ue down")

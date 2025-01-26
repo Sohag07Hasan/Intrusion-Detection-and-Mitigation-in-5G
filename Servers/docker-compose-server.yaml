@@ -5,7 +5,7 @@ services:
   server_11:
     container_name: server_11
     #image: tleemcjr/metasploitable2
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -20,7 +20,7 @@ services:
   #Server
   server_12:
     container_name: server_12
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -37,7 +37,7 @@ services:
   server_21:
     container_name: server_21
     #image: tleemcjr/metasploitable2
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -52,7 +52,7 @@ services:
   #Server
   server_22:
     container_name: server_22
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -67,7 +67,7 @@ services:
   #Server (for slice3)
   server_31:
     container_name: server_31
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -82,7 +82,7 @@ services:
 
   server_32:
     container_name: server_32
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -98,7 +98,7 @@ services:
   # Server to be connected to mlids (upf -> mlids -> server)
   server_mlids_21:
     container_name: server_mlids_21
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -113,7 +113,7 @@ services:
 
   server_mlids_22:
     container_name: server_mlids_22
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -128,7 +128,7 @@ services:
 
   server_mlids_12:
     container_name: server_mlids_12
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -143,7 +143,7 @@ services:
 
   server_mlids_13:
     container_name: server_mlids_13
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN

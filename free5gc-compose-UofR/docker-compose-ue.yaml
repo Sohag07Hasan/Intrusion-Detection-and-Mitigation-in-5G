@@ -77,7 +77,7 @@ services:
   #slice2 start here
   ueransim-ue21:
     container_name: ue21
-    image: uofr/ueransim:v1 #free5gc/ueransim:latest
+    image: sohag07hasan/ueransim:v1 #free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
       - ./config/slice2/gnb21cfg.yaml:/ueransim/config/gnbcfg.yaml
@@ -94,7 +94,7 @@ services:
 
   ueransim-ue22:
     container_name: ue22
-    image: uofr/ueransim:v1 #free5gc/ueransim:latest
+    image: sohag07hasan/ueransim:v1 #free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
       - ./config/slice2/gnb21cfg.yaml:/ueransim/config/gnbcfg.yaml
@@ -111,7 +111,7 @@ services:
 
   ueransim-ue23:
     container_name: ue23
-    image: uofr/ueransim:v1 #free5gc/ueransim:latest
+    image: sohag07hasan/ueransim:v1 #free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
       - ./config/slice2/gnb21cfg.yaml:/ueransim/config/gnbcfg.yaml
@@ -128,7 +128,7 @@ services:
 
   ueransim-ue24:
     container_name: ue24
-    image: uofr/ueransim:v1 #free5gc/ueransim:latest
+    image: sohag07hasan/ueransim:v1 #free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
       - ./config/slice2/gnb21cfg.yaml:/ueransim/config/gnbcfg.yaml
@@ -143,74 +143,74 @@ services:
         aliases:
           - ue24.free5gc.org  
 
-  #slice3 start here
-  ueransim-ue31:
-    container_name: ue31
-    image: free5gc/ueransim:latest
-    command: ./nr-ue -c ./config/uecfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
-      - ./data/ue:/data
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - ue31.free5gc.org
+  # #slice3 start here
+  # ueransim-ue31:
+  #   container_name: ue31
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-ue -c ./config/uecfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue31cfg.yaml:/ueransim/config/uecfg.yaml
+  #     - ./data/ue:/data
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - ue31.free5gc.org
 
-  ueransim-ue32:
-    container_name: ue32
-    image: free5gc/ueransim:latest
-    command: ./nr-ue -c ./config/uecfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue32cfg.yaml:/ueransim/config/uecfg.yaml
-      - ./data/ue:/data
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - ue32.free5gc.org
+  # ueransim-ue32:
+  #   container_name: ue32
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-ue -c ./config/uecfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue32cfg.yaml:/ueransim/config/uecfg.yaml
+  #     - ./data/ue:/data
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - ue32.free5gc.org
 
-  ueransim-ue33:
-    container_name: ue33
-    image: free5gc/ueransim:latest
-    command: ./nr-ue -c ./config/uecfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue33cfg.yaml:/ueransim/config/uecfg.yaml
-      - ./data/ue:/data
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - ue33.free5gc.org
+  # ueransim-ue33:
+  #   container_name: ue33
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-ue -c ./config/uecfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue33cfg.yaml:/ueransim/config/uecfg.yaml
+  #     - ./data/ue:/data
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - ue33.free5gc.org
 
-  ueransim-ue34:
-    container_name: ue34
-    image: free5gc/ueransim:latest
-    command: ./nr-ue -c ./config/uecfg.yaml
-    volumes:
-      - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice3/ue34cfg.yaml:/ueransim/config/uecfg.yaml
-      - ./data/ue:/data
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun"
-    networks:
-      privnet:
-        aliases:
-          - ue34.free5gc.org
+  # ueransim-ue34:
+  #   container_name: ue34
+  #   image: free5gc/ueransim:latest
+  #   command: ./nr-ue -c ./config/uecfg.yaml
+  #   volumes:
+  #     - ./config/slice3/gnb31cfg.yaml:/ueransim/config/gnbcfg.yaml
+  #     - ./config/slice3/ue34cfg.yaml:/ueransim/config/uecfg.yaml
+  #     - ./data/ue:/data
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - "/dev/net/tun"
+  #   networks:
+  #     privnet:
+  #       aliases:
+  #         - ue34.free5gc.org
   
   
 

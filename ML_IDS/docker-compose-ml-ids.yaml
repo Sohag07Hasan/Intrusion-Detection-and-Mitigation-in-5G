@@ -3,7 +3,7 @@ version: '3.8'
 services:  
   mlids_11: #This ML IDS will work with mirror traffic
     container_name: mlids_11
-    image: ubuntu-uofr
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -21,7 +21,7 @@ services:
 
   mlids_12: #This ML IDS will work with mirror traffic
     container_name: mlids_12
-    image: ubuntu-uofr
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -41,7 +41,7 @@ services:
 ## from UPF upf will handle which direction traffic will go
   mlids_21: #This ml ids container will sit in line with upf2
     container_name: mlids_21
-    image: ubuntu-uofr
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
@@ -63,7 +63,7 @@ services:
 
   mlids_22: #This ml ids container will sit in line with upf2
     container_name: mlids_22 #Inline
-    image: ubuntu-uofr
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN

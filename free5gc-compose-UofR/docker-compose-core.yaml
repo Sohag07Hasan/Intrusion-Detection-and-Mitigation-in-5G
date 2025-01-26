@@ -349,7 +349,7 @@ services:
   #Dummy [without assinging network, no network is being created. So, I am creating a dummy]
   dummy_1:
     container_name: dummy_1
-    image: ubuntu-uofr:latest
+    image: sohag07hasan/ubuntu-uofr:22.04
     command: tail -f /dev/null
     cap_add:
       - NET_ADMIN
