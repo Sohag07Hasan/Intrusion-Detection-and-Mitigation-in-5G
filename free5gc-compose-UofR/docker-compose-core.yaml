@@ -155,7 +155,8 @@ services:
 
   free5gc-pcf:
     container_name: pcf
-    image: free5gc/pcf:v3.4.1
+    #image: free5gc/pcf:v3.4.1
+    image: sohag07hasan/pcf-uofr:v3.4.1
     command: ./pcf -c ./config/pcfcfg.yaml
     expose:
       - "8000"
@@ -191,7 +192,8 @@ services:
 
   free5gc-smf2:
     container_name: smf2
-    image: free5gc/smf:v3.4.1
+    #image: free5gc/smf:v3.4.1
+    image: sohag07hasan/smf-uofr:v3.4.1
     command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
     expose:
       - "8000"
