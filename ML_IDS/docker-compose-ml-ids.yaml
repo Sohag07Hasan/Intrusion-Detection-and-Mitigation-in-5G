@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:  
   mlids_11: #This ML IDS will work with mirror traffic

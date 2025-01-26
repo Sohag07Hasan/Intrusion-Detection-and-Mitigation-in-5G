@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Configure iptables in all Servers
-#
+# Configure iptables in all Servers 
+# Serves connected to mlids no longer needed.
 # Entries for Slice 1 {upf ip: 10.200.200.10, ms_pool: 10.60.0.0/24 }
 ip route add 10.60.0.0/24 via 10.200.200.10 
 
