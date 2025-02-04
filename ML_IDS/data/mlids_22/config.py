@@ -29,11 +29,11 @@ Strategy = {
 
     'type_3': {
         'policy': 'attack_duration',
-        'throttle_intervals': [0, 50, 50, 50, 50],     #seconds 
-        'max_dl': ['3 Mbps', '2 Mbps', '1 Mbps', '500 Kbps', '1 Kbps'],
-        'max_ul': ['3 Mbps', '2 Mbps', '1 Mbps', '500 Kbps', '1 Kbps'],
-        'qos': [10, 20, 30, 40, 50],
-        'throttle_removal_interval': 50 #seconds
+        'throttle_intervals': [0, 35, 35],     #seconds 
+        'max_dl': ['2 Mbps', '1 Mbps', '1 Kbps'],
+        'max_ul': ['2 Mbps', '1 Mbps', '1 Kbps'],
+        'qos': [10, 20, 30],
+        'throttle_removal_interval': 35 #seconds
         #'pdu_session_deletion_limit': 150
     },
 
