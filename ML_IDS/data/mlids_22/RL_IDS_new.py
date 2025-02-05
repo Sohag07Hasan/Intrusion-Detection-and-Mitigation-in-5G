@@ -280,6 +280,7 @@ def predict_attack(features, flow_id):
         state_tensor = torch.tensor(STATE[flow_id], dtype=torch.float32)
         with torch.no_grad():
             q_values = rl_model(state_tensor)
+        rl_conf = np.max(q_values.cpu().data.numpy())
         action = np.argmax(q_values.cpu().data.numpy())
 
         STATE_COUNTER[flow_id] += 1
@@ -303,11 +304,12 @@ def predict_attack(features, flow_id):
         
         with torch.no_grad():
             q_values = rl_model(state_tensor)
+        rl_conf = np.max(q_values.cpu().data.numpy())
         action = np.argmax(q_values.cpu().data.numpy())
 
         STATE_COUNTER[flow_id] += 1
 
-    return action, rf_prediction
+    return action, rf_prediction, rl_conf
 
 
 
@@ -333,7 +335,7 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         feat_dict["iat_std"] = flow_features[3]
 
 
-        prediction, rf_prediction = predict_attack(feat_dict, flow_id)
+        prediction, rf_prediction, rl_conf = predict_attack(feat_dict, flow_id)
 
         if prediction == 0:
             rl_prediction = "Wait"
@@ -344,7 +346,8 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
             #print("RL prediction: Attack")
             #print("Throttle the malicious IP")
             #monitor_attacks(flow_id)
-            monitor_attacks_based_on_time(flow_id, 'attack')
+            if rl_conf > 0.96:
+                monitor_attacks_based_on_time(flow_id, 'attack')
         elif prediction == 2:
             rl_prediction = "Benign"
             #print("RL prediction: Benign")
@@ -356,10 +359,11 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         #print (f"Attack Detected: {f_id_to_save}")
 
         feat_dict["flow_id"] = f_id_to_save
-
         feat_dict["RL_label"] = rl_prediction
         feat_dict["RF_label"] = rf_prediction
+        feat_dict['Rl_conf'] = rl_conf
 
+        #print(rl_conf)
         #print(feat_dict)
         FEATURES.append(feat_dict)
 

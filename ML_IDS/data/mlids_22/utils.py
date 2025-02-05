@@ -421,10 +421,11 @@ def monitor_attacks_based_on_time(flow_id, prediction):
         # Append the new attack to the dataframe and save to CSV
         ATTACK_RECORDS_DF = pd.concat([ATTACK_RECORDS_DF, new_record], ignore_index=True)
 
-        if is_pdu_session_deleted or restore == 'restored':
-            ATTACK_RECORDS_DF.to_csv(file_name, index=False)
-        if mitigation_action:
-            print(f'{source_ip}: {mitigation_action}; location_url: {location_url}')
+    if is_pdu_session_deleted or restore == 'restored':
+        #print("result written")
+        ATTACK_RECORDS_DF.to_csv(file_name, index=False)
+    if mitigation_action:
+        print(f'{source_ip}: {mitigation_action}; location_url: {location_url}')
 
 
 ## enforce mitigation
