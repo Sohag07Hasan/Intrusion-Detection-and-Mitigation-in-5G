@@ -1,0 +1,22 @@
+- name: Install base tools for 5G testbed
+  hosts: builder
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install essential tools
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - git
+          - wireguard
+        state: present
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+      

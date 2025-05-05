@@ -1,0 +1,25 @@
+- name: Test Ansible Setup for Control Plane
+  hosts: controlplane
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Print hostname
+      command: hostname
+      register: result
+    
+    - name: Show hostname
+      debug:
+        msg: "{{ result.stdout }}"
+
+- name: Test Ansible Setup for Data Plane
+  hosts: dataplane
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Print hostname
+      command: hostname
+      register: result
+    
+    - name: Show hostname
+      debug:
+        msg: "{{ result.stdout }}"
