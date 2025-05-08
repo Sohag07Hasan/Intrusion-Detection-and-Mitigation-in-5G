@@ -42,6 +42,8 @@ __pycache__/
 /Servers/dvwa_keys/
 /Servers/DVWA2/
 
+## ignoring keys
+/5g-infra/ansible/files/
 
 #Ignor based on file type:
 **/*.csv

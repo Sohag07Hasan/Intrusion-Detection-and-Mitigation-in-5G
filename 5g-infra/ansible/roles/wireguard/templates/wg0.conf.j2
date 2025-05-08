@@ -1,0 +1,15 @@
+[Interface]
+PrivateKey = {{ wg_private_key }}
+Address = {{ wg_ip }}
+ListenPort = {{ wg_port }}
+SaveConfig = true
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
+
+{% for peer in wg_peers %}
+[Peer]
+PublicKey = {{ peer.public_key }}
+Endpoint = {{ peer.endpoint }}
+AllowedIPs = {{ peer.allowed_ips }}
+PersistentKeepalive = 25
+{% endfor %}

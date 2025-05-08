@@ -1,0 +1,34 @@
+ansible/
+├── ansible.cfg
+├── inventory.ini
+├── site.yml                      # Main playbook entry point
+├── host_vars/
+│   ├── node1.yaml
+│   └── node2.yaml
+├── group_vars/
+│   └── all.yaml                  # Common vars like Docker image tags
+├── files/
+│   ├── node1_privatekey
+│   ├── node1_publickey
+│   ├── node2_privatekey
+│   ├── node2_publickey
+│   └── .env                      # Optional environment file for Docker
+├── roles/
+│   ├── wireguard/
+│   │   ├── tasks/
+│   │   │   └── main.yml
+│   │   └── templates/
+│   │       └── wg0.conf.j2
+│   ├── docker/
+│   │   ├── tasks/
+│   │   │   └── main.yml          # Install Docker, Docker Compose
+│   ├── docker_compose/
+│   │   ├── tasks/
+│   │   │   └── main.yml          # Pull repo, run docker-compose
+│   │   └── templates/
+│   │       └── docker-compose.yml.j2
+│   └── app_config/
+│       ├── tasks/
+│       │   └── main.yml          # Config updates to containers (e.g. free5GC config files)
+│       └── templates/
+│           └── config.json.j2

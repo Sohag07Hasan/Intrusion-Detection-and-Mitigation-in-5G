@@ -1,0 +1,1 @@
+This Repo will help to deploy 5G Testbed on AWS using Terraform and Ansible.
