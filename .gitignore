@@ -44,7 +44,7 @@ __pycache__/
 
 ## ignoring keys
 /5g-infra/ansible/files/
-/5g-ami-builder
+/5g-ami-builder/
 
 #Ignor based on file type:
 **/*.csv
