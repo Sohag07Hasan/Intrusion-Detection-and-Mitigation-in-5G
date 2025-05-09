@@ -22,16 +22,6 @@
     mode: '0700'
   become: true
 
-# - name: Copy private key to node
-#   copy:
-#     content: "{{ lookup('file', 'files/' + inventory_hostname) }}"
-#     dest: "/etc/wireguard/privatekey"
-#     owner: root
-#     group: root
-#     mode: '0600'
-#   no_log: true
-#   become: true
-
 - name: Deploy wg0.conf from template
   template:
     src: wg0.conf.j2

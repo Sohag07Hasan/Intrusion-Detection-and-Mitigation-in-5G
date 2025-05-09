@@ -1,5 +1,17 @@
+# 1. Will test ssh connectivtity of Servers with control/worksatation server
+# 2. It will install all pre-requisite softwares/tools
+- name: Check Connectivity and Install Pre-requisite tools
+  hosts: wireguard
+  become: yes
+  gather_facts: false
+  roles:
+    - check-pre-requisites
+
+
+# It will setup wireguard VPN among the Work-Load Server
 - name: Setup WireGuard VPN
   hosts: wireguard
   become: yes
+  gather_facts: false
   roles:
     - wireguard

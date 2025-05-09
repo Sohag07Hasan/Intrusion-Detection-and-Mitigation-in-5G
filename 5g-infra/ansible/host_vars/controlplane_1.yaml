@@ -1,7 +1,7 @@
-wg_private_key: "{{ lookup('file', 'files/controlplane_1') }}"
+wg_private_key: "{{ lookup('file', 'files/wg_keys/node1_privatekey') }}"
 wg_ip: "10.100.100.1/24"
 
 wg_peers:
-  - public_key: "{{ lookup('file', 'files/dataplane_1.pub') }}"
+  - public_key: "{{ lookup('file', 'files/wg_keys/node2_publickey') }}"
     endpoint: "{{ hostvars['dataplane_1']['ansible_host'] }}:{{ wg_port }}"
     allowed_ips: "10.100.100.2/32"

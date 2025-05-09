@@ -1,1 +1,3 @@
 wg_port: 51820
+wg_interface: wg0
+outgoing_interface: enX0

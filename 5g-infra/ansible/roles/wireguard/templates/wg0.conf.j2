@@ -3,8 +3,8 @@ PrivateKey = {{ wg_private_key }}
 Address = {{ wg_ip }}
 ListenPort = {{ wg_port }}
 SaveConfig = true
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
+PostUp = iptables -A FORWARD -i {{ wg_interface }} -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ outgoing_interface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i {{ wg_interface }} -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ outgoing_interface }} -j MASQUERADE
 
 {% for peer in wg_peers %}
 [Peer]
