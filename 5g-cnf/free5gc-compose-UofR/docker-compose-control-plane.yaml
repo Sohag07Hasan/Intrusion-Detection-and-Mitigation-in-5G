@@ -1,75 +1,6 @@
 #version: '3.8'
 
-services:
-  free5gc-upf:
-    container_name: upf
-    image: free5gc/upf:v3.4.1
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
-    volumes:
-      - ./config/slice1/upf1cfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-      - ./data/upf:/data
-    cap_add:
-      - NET_ADMIN
-    networks:
-      privnet:
-        aliases:
-          - upf.free5gc.org
-      publicnet:  #public network to be connected to outside network
-        ipv4_address: 10.200.200.10
-        aliases:
-          - upf
-      securenet:  #public network to be connected to outside network
-        ipv4_address: 10.10.10.10
-        aliases:
-          - upf
-
-
-  free5gc-upf2:
-    container_name: upf2
-    image: free5gc/upf:v3.4.1
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
-    volumes:
-      - ./config/slice2/upf2cfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-      - ./data/upf:/data
-    cap_add:
-      - NET_ADMIN
-    networks:
-      privnet:
-        aliases:
-          - upf2.free5gc.org
-      publicnet:
-        ipv4_address: 10.200.200.20
-        aliases:
-          - upf2
-      securenet:  #public network to be connected to outside network
-        ipv4_address: 10.10.10.20
-        aliases:
-          - upf2
-
-  free5gc-upf3:
-    container_name: upf3
-    image: free5gc/upf:v3.4.1
-    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
-    volumes:
-      - ./config/slice3/upf3cfg.yaml:/free5gc/config/upfcfg.yaml
-      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
-      - ./data/upf:/data
-    cap_add:
-      - NET_ADMIN
-    networks:
-      privnet:
-        aliases:
-          - upf3.free5gc.org
-      publicnet:
-        ipv4_address: 10.200.200.30 #Needs to check if it creates any ip conflict
-        aliases:
-          - upf3
-      securenet:  #public network to be connected to outside network
-        ipv4_address: 10.10.10.30 ##Needs to check if it creates any ip conflict
-        aliases:
-          - upf3
+services: 
 
   db:
     container_name: mongodb
@@ -190,46 +121,6 @@ services:
       - free5gc-nrf
       - free5gc-upf
 
-  free5gc-smf2:
-    container_name: smf2
-    #image: free5gc/smf:v3.4.1
-    image: sohag07hasan/smf-uofr:v3.4.1
-    command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
-    expose:
-      - "8000"
-    volumes:
-      - ./config/slice2/smf2cfg.yaml:/free5gc/config/smfcfg.yaml
-      - ./config/slice2/uerouting2.yaml:/free5gc/config/uerouting.yaml
-    environment:
-      GIN_MODE: release
-    networks:
-      privnet:
-        aliases:
-          - smf2.free5gc.org
-    depends_on:
-      - free5gc-nrf
-      - free5gc-upf2
-      
-  free5gc-smf3:
-    container_name: smf3
-    image: free5gc/smf:v3.4.1
-    command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
-    expose:
-      - "8000"
-    volumes:
-      - ./config/slice3/smf3cfg.yaml:/free5gc/config/smfcfg.yaml
-      - ./config/slice3/uerouting3.yaml:/free5gc/config/uerouting.yaml
-    environment:
-      GIN_MODE: release
-    networks:
-      privnet:
-        aliases:
-          - smf3.free5gc.org
-    depends_on:
-      - free5gc-nrf
-      - free5gc-upf3
-
-
   free5gc-udm:
     container_name: udm
     image: free5gc/udm:v3.4.1
@@ -348,54 +239,14 @@ services:
   #   depends_on:
   #     - free5gc-n3iwf
 
-  #Dummy [without assinging network, no network is being created. So, I am creating a dummy]
-  dummy_1:
-    container_name: dummy_1
-    image: sohag07hasan/ubuntu-uofr:22.04
-    command: tail -f /dev/null
-    cap_add:
-      - NET_ADMIN
-    # volumes:
-    #   - ./config/server-iptables.sh:/config/server-iptables.sh
-    #   - ./data:/data
-    networks:
-      after_mlids:
-        ipv4_address: 10.50.50.250
-        aliases:
-          - dummy_1
-
 networks:
   privnet:  # 5G functions are connected with this
     ipam:
       driver: default
       config:
-        - subnet: 10.100.200.0/24
+        - subnet: 10.100.100.0/25
     driver_opts:
-      com.docker.network.bridge.name: br-free5gc
-
-  publicnet:  # Servers are connnected with this
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.200.200.0/24  # Different subnet for the new network
-    driver_opts:
-      com.docker.network.bridge.name: br-public  # Optional: Specify a different bridge name for the new network
-
-  securenet:  # Suricata and MLIDS are conencted with this
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.10.10.0/24  # Different subnet for the new network
-    driver_opts:
-      com.docker.network.bridge.name: br-secure  # Optional: Specify a different bridge name for the new network
-
-  after_mlids:  # Suricata and MLIDS are conencted with this (upf -> mlids -> after_mlids -> Internet)
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.50.50.0/24  # Different subnet for the new network
-    driver_opts:
-      com.docker.network.bridge.name: br-mlids  # Optional: Specify a different bridge name for the new network
+      com.docker.network.bridge.name: br-free5gc  
 
 volumes:
   dbdata:
