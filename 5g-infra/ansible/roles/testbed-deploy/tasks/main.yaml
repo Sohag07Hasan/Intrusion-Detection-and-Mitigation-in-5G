@@ -1,0 +1,37 @@
+# - name: Install required packages
+#   apt:
+#     name:
+#       - docker.io
+#       - docker-compose
+#     state: present
+#     update_cache: true
+#   become: true
+
+# - name: Ensure Docker service is running
+#   service:
+#     name: docker
+#     state: started
+#     enabled: true
+#   become: true
+
+# - name: Create target directory for deployment
+#   file:
+#     path: /opt/5gtb
+#     state: directory
+#     owner: "{{ ansible_user }}"
+#     mode: '0755'
+
+# - name: Copy full Docker Compose project folder
+#   copy:
+#     src: "{{ role_path }}/files/testbed/control_plane"
+#     dest: /opt/5gtb/
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
+#     mode: preserve
+#   become: true
+
+# - name: Launch Docker containers using Compose
+#   community.docker.docker_compose:
+#     project_src: /opt/5gtb
+#     state: present
+#   become: true

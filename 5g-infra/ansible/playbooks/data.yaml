@@ -1,0 +1,10 @@
+# 4. Deploy Data Plane Components
+- name: Deploy 5G Testbed Data Plane
+  hosts: dataplane
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: Run only data plane tasks from the role
+      import_role:
+        name: testbed-deploy
+        tasks_from: data_plane

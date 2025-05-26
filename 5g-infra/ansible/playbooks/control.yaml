@@ -1,0 +1,13 @@
+# 3. Deploy Control Plane Components
+- name: Deploy 5G Testbed Control Plane
+  hosts: controlplane
+  become: yes
+  gather_facts: false
+  # roles:
+  #   - role: testbed-deploy
+  #     tasks_from: control_plane
+  tasks:
+    - name: Run only control plane tasks from the role
+      import_role:
+        name: testbed-deploy
+        tasks_from: control_plane

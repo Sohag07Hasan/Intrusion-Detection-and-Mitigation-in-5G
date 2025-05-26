@@ -13,9 +13,11 @@ services:
       - NET_ADMIN
     networks:
       privnet:
-        ipv4_address: 10.100.100.150
+        ipv4_address: 10.200.100.150
         aliases:
           - upf.free5gc.org
+    extra_hosts:
+      - "smf.free5gc.org:10.200.100.20"
 
 
 
@@ -34,14 +36,17 @@ services:
       privnet:
         aliases:
           - gnb.free5gc.org
-
+    extra_hosts:
+      - "smf.free5gc.org:10.200.100.20"
+      - "amf.free5gc.org:10.200.100.15"
+   
   ueransim-ue11:
     container_name: ue11
     image: free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
       - ./config/slice1/gnb11cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice1/ue11cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./config/slice1/ue12cfg.yaml:/ueransim/config/uecfg.yaml
       - ./data/ue:/data
     cap_add:
       - NET_ADMIN
@@ -54,12 +59,17 @@ services:
 
 networks:
   privnet:  # 5G functions are connected with this
+    driver: bridge
     ipam:
-      driver: default
       config:
-        - subnet: 10.100.100.128/25
+        - subnet: 10.200.100.128/25
+          gateway: 10.200.100.129
     driver_opts:
       com.docker.network.bridge.name: br-free5gc
+
   
 volumes:
   dbdata:
+
+
+

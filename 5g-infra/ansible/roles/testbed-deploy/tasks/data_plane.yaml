@@ -1,0 +1,43 @@
+- name: Add IP Route (runtime only)
+  ansible.builtin.command: > 
+    ip route add {{ controlplane_1_subnet }} via 10.100.100.1 dev wg0
+  become: true
+  ignore_errors: true
+
+- name: Clone gtp5g repository
+  git:
+    repo: https://github.com/free5gc/gtp5g.git
+    dest: /opt/gtp5g
+  become: yes
+
+- name: Comple and Install
+  shell: |
+    cd /opt/gtp5g
+    make clean
+    make
+    make install
+  become: yes
+
+- name: Create target directory for deployment
+  file:
+    path: /opt/5gtb
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+
+- name: Copy data plane docker-compose and config files
+  copy:
+    src: "{{ role_path }}/files/testbed/data_plane"
+    dest: /opt/5gtb/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: preserve
+  become: true
+
+- name: Bring up data plane containers
+  command: docker compose -f /opt/5gtb/data_plane/slice_1/docker-compose-data-plane.yaml up -d
+  args:
+    chdir: /opt/5gtb/data_plane/slice_1
+
+

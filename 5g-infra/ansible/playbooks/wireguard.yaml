@@ -1,0 +1,7 @@
+# It will setup wireguard VPN among the Work-Load Server
+- name: Setup WireGuard VPN
+  hosts: wireguard
+  become: yes
+  gather_facts: false
+  roles:
+    - wireguard

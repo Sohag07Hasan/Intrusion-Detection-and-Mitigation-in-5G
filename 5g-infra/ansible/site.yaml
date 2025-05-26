@@ -1,17 +1,11 @@
-# 1. Will test ssh connectivtity of Servers with control/worksatation server
-# 2. It will install all pre-requisite softwares/tools
-- name: Check Connectivity and Install Pre-requisite tools
-  hosts: wireguard
-  become: yes
-  gather_facts: false
-  roles:
-    - check-pre-requisites
+#Check connectivity
+- import_playbook: playbooks/check.yaml
 
+#Setup Wiregulard among the EC2 instances
+- import_playbook: playbooks/wireguard.yaml
 
-# It will setup wireguard VPN among the Work-Load Server
-- name: Setup WireGuard VPN
-  hosts: wireguard
-  become: yes
-  gather_facts: false
-  roles:
-    - wireguard
+#Setup Control Plane
+- import_playbook: playbooks/control.yaml
+
+#Setup Data Plane
+- import_playbook: playbooks/data.yaml

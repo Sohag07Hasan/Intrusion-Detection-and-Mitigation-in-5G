@@ -1,0 +1,26 @@
+- name: Add IP Route (runtime only)
+  ansible.builtin.command: > 
+    ip route add {{ dataplane_1_subnet }} via 10.100.100.2 dev wg0
+  become: true
+  ignore_errors: true
+
+- name: Create target directory for deployment
+  file:
+    path: /opt/5gtb
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Copy control plane docker-compose and config files
+  copy:
+    src: "{{ role_path }}/files/testbed/control_plane"
+    dest: /opt/5gtb/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: preserve
+  become: true
+
+- name: Bring up control plane containers
+  command: docker compose -f /opt/5gtb/control_plane/docker-compose-control-plane.yaml up -d
+  args:
+    chdir: /opt/5gtb/control_plane

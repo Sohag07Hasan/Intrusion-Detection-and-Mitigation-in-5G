@@ -4,4 +4,4 @@ wg_ip: "10.100.100.2/24"
 wg_peers:
   - public_key: "{{ lookup('file', 'files/wg_keys/node1_publickey') }}"
     endpoint: "{{ hostvars['controlplane_1']['ansible_host'] }}:{{ wg_port }}"
-    allowed_ips: "10.100.100.1/32"
+    allowed_ips: "10.100.100.1/32, {{ controlplane_1_subnet }}"

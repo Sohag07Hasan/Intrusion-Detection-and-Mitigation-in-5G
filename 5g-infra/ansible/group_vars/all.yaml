@@ -1,3 +1,5 @@
 wg_port: 51820
 wg_interface: wg0
 outgoing_interface: enX0
+controlplane_1_subnet: 10.200.100.0/25
+dataplane_1_subnet: 10.200.100.128/25

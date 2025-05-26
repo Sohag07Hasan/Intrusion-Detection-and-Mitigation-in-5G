@@ -9,10 +9,24 @@
   apt:
     name:
       - docker.io
-      - docker-compose
       - git
       - wireguard
+      - gcc
+      - make
+      - tree
     state: present
+
+- name: Install Docker Compose v2 plugin
+  become: true
+  shell: |
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+    mkdir -p /usr/lib/docker/cli-plugins
+    curl -SL https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/lib/docker/cli-plugins/docker-compose
+    chmod +x /usr/lib/docker/cli-plugins/docker-compose
+  args:
+    creates: /usr/lib/docker/cli-plugins/docker-compose
+
+
 - name: Add ubuntu user to docker group
   user:
     name: ubuntu
