@@ -6,7 +6,7 @@ services:
     image: free5gc/upf:v3.4.1
     command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
     volumes:
-      - ./config/slice1/upf1cfg.yaml:/free5gc/config/upfcfg.yaml
+      - ./config/upf1cfg.yaml:/free5gc/config/upfcfg.yaml
       - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
       - ./data/upf:/data
     cap_add:
@@ -26,8 +26,7 @@ services:
     image: free5gc/ueransim:latest
     command: ./nr-gnb -c ./config/gnbcfg.yaml
     volumes:
-      - ./config/slice1/gnb11cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slicle1/ue11cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./config/gnb11cfg.yaml:/ueransim/config/gnbcfg.yaml
     cap_add:
       - NET_ADMIN
     devices:
@@ -45,8 +44,7 @@ services:
     image: free5gc/ueransim:latest
     command: ./nr-ue -c ./config/uecfg.yaml
     volumes:
-      - ./config/slice1/gnb11cfg.yaml:/ueransim/config/gnbcfg.yaml
-      - ./config/slice1/ue12cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./config/ue11cfg.yaml:/ueransim/config/uecfg.yaml
       - ./data/ue:/data
     cap_add:
       - NET_ADMIN

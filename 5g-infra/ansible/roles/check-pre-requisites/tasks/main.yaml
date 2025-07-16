@@ -14,6 +14,7 @@
       - gcc
       - make
       - tree
+      - dos2unix
     state: present
 
 - name: Install Docker Compose v2 plugin

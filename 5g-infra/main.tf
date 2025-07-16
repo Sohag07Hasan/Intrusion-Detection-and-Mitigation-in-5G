@@ -26,7 +26,7 @@ module "us_east" {
   subnet_cidr   = "10.10.1.0/24"
   ami           = "ami-084568db4383264d4" #"ami-0c87495d330148ddc"
   vpc_cidr      = "10.10.0.0/16"
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
 }
 
 #Instance Crated at US West
@@ -37,6 +37,6 @@ module "us_west" {
   subnet_cidr   = "10.20.1.0/24"
   ami           = "ami-04f7a54071e74f488" #"ami-04e278da5cb8c86a0"
   vpc_cidr      = "10.20.0.0/16"
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
 }
 

@@ -5,10 +5,13 @@
   ignore_errors: true
 
 - name: Clone gtp5g repository
-  git:
+  ansible.builtin.git:
     repo: https://github.com/free5gc/gtp5g.git
     dest: /opt/gtp5g
+    version: v0.8.10
   become: yes
+  tags:
+    - rerun
 
 - name: Comple and Install
   shell: |
@@ -33,6 +36,12 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: preserve
+  become: true
+
+- name: Fix line ending and permissions of upf-iptables.sh file
+  ansible.builtin.shell: |
+    dos2unix /opt/5gtb/data_plane/slice_1/config/upf-iptables.sh
+    chmod +x /opt/5gtb/data_plane/slice_1/config/upf-iptables.sh
   become: true
 
 - name: Bring up data plane containers
