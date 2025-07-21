@@ -111,7 +111,7 @@ def process_pcap(pkt, file_id = "id"):
                 TIMESTAMP[fwd_id] = pkt.time
 
     #if len(FEATURES) >= 100:
-    if should_write_features_now():
+    if should_write_features_now() and len(FEATURES) >= 100:
         save_features()
         # empty the global variables
         PCKT_CONTAINER = {}   # { flow_id: [pckt_list]  }
@@ -280,7 +280,6 @@ def predict_attack(features, flow_id):
         state_tensor = torch.tensor(STATE[flow_id], dtype=torch.float32)
         with torch.no_grad():
             q_values = rl_model(state_tensor)
-        rl_conf = np.max(q_values.cpu().data.numpy())
         action = np.argmax(q_values.cpu().data.numpy())
 
         STATE_COUNTER[flow_id] += 1
@@ -304,12 +303,11 @@ def predict_attack(features, flow_id):
         
         with torch.no_grad():
             q_values = rl_model(state_tensor)
-        rl_conf = np.max(q_values.cpu().data.numpy())
         action = np.argmax(q_values.cpu().data.numpy())
 
         STATE_COUNTER[flow_id] += 1
 
-    return action, rf_prediction, rl_conf
+    return action, rf_prediction
 
 
 
@@ -335,7 +333,7 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         feat_dict["iat_std"] = flow_features[3]
 
 
-        prediction, rf_prediction, rl_conf = predict_attack(feat_dict, flow_id)
+        prediction, rf_prediction = predict_attack(feat_dict, flow_id)
 
         if prediction == 0:
             rl_prediction = "Wait"
@@ -346,8 +344,7 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
             #print("RL prediction: Attack")
             #print("Throttle the malicious IP")
             #monitor_attacks(flow_id)
-            if rl_conf > 0.96:
-                monitor_attacks_based_on_time(flow_id, 'attack')
+            monitor_attacks_based_on_time(flow_id, 'attack')
         elif prediction == 2:
             rl_prediction = "Benign"
             #print("RL prediction: Benign")
@@ -359,11 +356,10 @@ def calc_features(pkt_list, flow_id, protocol, file_id):
         #print (f"Attack Detected: {f_id_to_save}")
 
         feat_dict["flow_id"] = f_id_to_save
+
         feat_dict["RL_label"] = rl_prediction
         feat_dict["RF_label"] = rf_prediction
-        feat_dict['Rl_conf'] = rl_conf
 
-        #print(rl_conf)
         #print(feat_dict)
         FEATURES.append(feat_dict)
 
@@ -408,7 +404,7 @@ def calc_fwd_pkt_features(pkt_list, flow_id):
 
 ##This function will initialize IDS systems
 def initialize_ids():
-    print('initializeing IDS')      
+    #print('initializeing IDS')      
     file_list = [
         './mapping_data.txt',
         './attack_records.csv',
@@ -442,7 +438,7 @@ if __name__ == "__main__":
             SUB_FLOW_COUNTER = {}
             FEATURES = []         # [{ flow_id, protocol, bytes_received in last 1s
     else:
-        print('initializeing IDS')
+        print('################################################')
         initialize_ids()
         print(f"Starting packet capture on interface {INTERFACE}")
         sniff(iface=INTERFACE, prn=process_pcap, store=False)
