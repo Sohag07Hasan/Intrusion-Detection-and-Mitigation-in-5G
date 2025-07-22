@@ -71,6 +71,28 @@ services:
         aliases:
           - upf3
 
+  free5gc-upf4:
+    container_name: upf4
+    image: free5gc/upf:v3.4.1
+    command: bash -c "./upf-iptables.sh && ./upf -c ./config/upfcfg.yaml"
+    volumes:
+      - ./config/slice4/upf4cfg.yaml:/free5gc/config/upfcfg.yaml
+      - ./config/upf-iptables.sh:/free5gc/upf-iptables.sh
+      - ./data/upf:/data
+    cap_add:
+      - NET_ADMIN
+    networks:
+      privnet:
+        aliases:
+          - upf4.free5gc.org
+      publicnet:
+        ipv4_address: 10.200.200.60 #Needs to check if it creates any ip conflict
+        aliases:
+          - upf4
+      securenet:  #public network to be connected to outside network
+        ipv4_address: 10.10.10.60 ##Needs to check if it creates any ip conflict
+        aliases:
+          - upf4
   db:
     container_name: mongodb
     image: mongo:4.4.15 #do not chnage this version. it sepends on Kernal Version
@@ -208,6 +230,7 @@ services:
       - free5gc-nrf
       - free5gc-upf2
       
+  
   free5gc-smf3:
     container_name: smf3
     image: free5gc/smf:v3.4.1
@@ -226,6 +249,25 @@ services:
     depends_on:
       - free5gc-nrf
       - free5gc-upf3
+
+  free5gc-smf4:
+    container_name: smf4
+    image: free5gc/smf:v3.4.1
+    command: ./smf -c ./config/smfcfg.yaml -u ./config/uerouting.yaml
+    expose:
+      - "8000"
+    volumes:
+      - ./config/slice4/smf4cfg.yaml:/free5gc/config/smfcfg.yaml
+      - ./config/slice4/uerouting4.yaml:/free5gc/config/uerouting.yaml
+    environment:
+      GIN_MODE: release
+    networks:
+      privnet:
+        aliases:
+          - smf4.free5gc.org
+    depends_on:
+      - free5gc-nrf
+      - free5gc-upf4
 
 
   free5gc-udm:

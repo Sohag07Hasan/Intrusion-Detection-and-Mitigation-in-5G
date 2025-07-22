@@ -52,6 +52,23 @@ services:
         aliases:
           - gnb3.free5gc.org
 
+  
+  ueransim-gnb41:
+    container_name: ueransim-gnb41
+    image: free5gc/ueransim:latest
+    command: ./nr-gnb -c ./config/gnbcfg.yaml
+    volumes:
+      - ./config/slice4/gnb41cfg.yaml:/ueransim/config/gnbcfg.yaml
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        aliases:
+          - gnb4.free5gc.org
+
+
 networks:
   privnet:
     ipam:

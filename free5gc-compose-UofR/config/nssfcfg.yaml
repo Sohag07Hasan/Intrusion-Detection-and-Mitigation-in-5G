@@ -29,6 +29,8 @@ configuration:
         - sst: 1 # Slice/Service Type (uinteger, range: 0~255)
           sd: 112233 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
         - sst: 1 # Slice/Service Type (uinteger, range: 0~255)
+          sd: 223344 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
+        - sst: 1 # Slice/Service Type (uinteger, range: 0~255)
           sd: 000003 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
         - sst: 2 # Slice/Service Type (uinteger, range: 0~255)
           sd: 000001 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
@@ -91,6 +93,14 @@ configuration:
         # the NRF to be used to select the NFs/services within the selected NSI, and an optonal ID
         - nrfId: http://nrf.free5gc.org:8000/nnrf-nfm/v1/nf-instances
           nsiId: 23
+    - snssai: # S-NSSAI of this NSI
+        sst: 1 # Slice/Service Type (uinteger, range: 0~255)
+        sd: 223344 # Slice Differentiator (3 bytes hex string, range: 000000~FFFFFF)
+      nsiInformationList: # Information list of this NSI
+        # the NRF to be used to select the NFs/services within the selected NSI, and an optonal ID
+        - nrfId: http://nrf.free5gc.org:8000/nnrf-nfm/v1/nf-instances
+          nsiId: 24
+              
   amfSetList: # List of AMF Sets that my be assigned by this NSSF
     - amfSetId: 1 # the AMF Set identifier
       amfList: # Instance ID of the AMFs in this set

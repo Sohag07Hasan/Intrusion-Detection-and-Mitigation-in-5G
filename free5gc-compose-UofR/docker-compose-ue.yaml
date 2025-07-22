@@ -211,8 +211,23 @@ services:
       privnet:
         aliases:
           - ue34.free5gc.org
-  
-  
+
+  #slice3 start here
+  ueransim-ue41:
+    container_name: ue41
+    image: free5gc/ueransim:latest
+    command: ./nr-ue -c ./config/uecfg.yaml
+    volumes:
+      - ./config/slice4/ue41cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./data/ue:/data
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        aliases:
+          - ue41.free5gc.org  
 
   
 networks:
