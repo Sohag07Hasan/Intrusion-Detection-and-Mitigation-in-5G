@@ -229,6 +229,54 @@ services:
         aliases:
           - ue41.free5gc.org  
 
+  ueransim-ue42:
+    container_name: ue42
+    image: free5gc/ueransim:latest
+    command: ./nr-ue -c ./config/uecfg.yaml
+    volumes:
+      - ./config/slice4/ue42cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./data/ue:/data
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        aliases:
+          - ue42.free5gc.org
+
+  ueransim-ue43:
+    container_name: ue43
+    image: free5gc/ueransim:latest
+    command: ./nr-ue -c ./config/uecfg.yaml
+    volumes:
+      - ./config/slice4/ue43cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./data/ue:/data
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        aliases:
+          - ue43.free5gc.org  
+
+  ueransim-ue44:
+    container_name: ue44
+    image: free5gc/ueransim:latest
+    command: ./nr-ue -c ./config/uecfg.yaml
+    volumes:
+      - ./config/slice4/ue44cfg.yaml:/ueransim/config/uecfg.yaml
+      - ./data/ue:/data
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun"
+    networks:
+      privnet:
+        aliases:
+          - ue44.free5gc.org  
+  
   
 networks:
   privnet:

@@ -34,7 +34,7 @@ case $input_command in
     ;;
   "ue up")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml up..."
-    0 > /dev/null 2>&1
+    docker compose -f ./free5gc-compose-UofR/docker-compose-ue.yaml up -d > /dev/null 2>&1
     ;;
   "ue down")
     echo "Executing ./free5gc-compose-UofR/docker-compose.yaml down..."
